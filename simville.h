@@ -2,100 +2,179 @@
 #define SIMVILLE_H_
 
 #include <iostream>
-#include <map>
+#include <array>
+#include <list>
 #include <iomanip>
+#include <string>
+#include <vector>
+#include <random>
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+#undef max
+
 #include "denizen.h"
 #include "district.h"
 
-using std::cout;
-using std::endl;
-using std::setw;
-using std::multimap;
-using std::pair;
-
+using namespace std;
 
 class Simville {
 private:
 	int dayT;
 	int hourT;
-	//multimap<const Denizen*, District> population;
-	multimap<const District*, Denizen> population2;
-	multimap<const District*, Denizen*> population3;
+	std::list<District*>districts;
 
 public:
 	Simville() : dayT(0), hourT(0) {}; //Simville has a default day 0 and hour 0
 
+	/*
+	* Increments time. Each day is made up of four 6-hour periods (6:00, 12:00, 18:00, 0:00).
+	* int hourT represents the current hour and increments the day (dayT) after every 24-hour cycle.
+	*/
 	void hourTick() {
 		if (hourT == 0) {
 			hourT = 6;
 			++dayT;
-			cout << endl << setw(17) << "Day " << dayT << endl;
+			std::cout << endl << std::setw(20) << " " << setfill('=') << std::setw(19) << " DAY ";
+			std::cout << dayT << " " << std::setw(15) << " " << setfill(' ') << endl;
 			hourTick();
 		}
 		else if (hourT == 24) {
-			cout << "0:00" << endl;
+			std::cout << "DAY " << dayT << ", " << "24:00" << endl;
 			hourT = 0;
 		}
 		else {
-			cout << hourT << ":00" << endl;
+			std::cout << "DAY " << dayT << ", " << hourT << ":00" << endl;
 			hourT = (hourT + 6);
 		}
 	}
 
-	/*void addDenizen(const Denizen* de, District di) {
-		population.insert(pair<const Denizen*, District>(de, di));
-	};
+	void addDist(District* d) { districts.push_back(d); }
 
-	//Takes denizen, returns a district according to population map
-	District retDistrict(const Denizen* de) {
-		return population.find(de)->second;
-	}*/
-
-	//Need district as key, denizen population as output
-	void addDenizen2(const District* di, Denizen de) {
-		population2.insert(pair<const District*, Denizen>(di, de));
-	};
-
-	int districtPop(const District* di) {
-		return population2.count(di);
-	}
-
-	void printPop(const District* di) {
-		/* //This would print the entire count as many times as there are denizens (which is a heckin' lot)
-		for (multimap<const District*, Denizen>::iterator it = population2.begin();
-			it != population2.end();) {	
-			const District * dist = (*it).first;
-			cout << dist->getName() << " population: " << population2.count(dist);
-			++it;
-		}*/
-		cout << di->getName() << " population: " << population2.count(di) << endl;
-	}
-
-	//Accounting for derived classes of Denizen, meaning that map has to be of Districts and Denizen pointers
-	/*void addDenizen3(const District* di, Denizen* de) {
-		population3.insert(pair<const District*, Denizen*>(di, de));
-	};*/
-
-	void printPop3(const District* di) {
-		int zombies, alarmed = 0;
-		for (multimap<const District*, Denizen>::iterator it = population2.begin();
-			it != population2.end();) {
-			//const District* dist = (*it).first;
-			cout << di->getName() << " population: " << endl;
-			//  B* b = dynamic_cast<B *>(a[0]);
-			/*Denizen* personptr = &(population2.find(di)->second);
-			Zombie* person = dynamic_cast<Zombie*>(*personptr);*/
-			/*
-			if (person)
-			{
-				// This animal is not a dog.
-			}
-			else continue;
-			++it;*/
+	/*
+	* Prints population of zombies, alarmed and ignorant denizens by individual district.
+	* Only displays if user selects verbose option. 
+	*/
+	void districtPopulation(bool verbose) {
+		std::list<District*>::iterator it = districts.begin();
+		while (it != districts.end()) {
+			District* dist = *it;
+			dist->printPop(verbose);
+			it++;
 		}
-		
 	}
 
+	/*
+	* Prints the sum total of all zombies, alarmed and ignorant denizens from all districts.
+	*/
+	void showTotal() {
+		int zombies = 0;
+		int alarmed = 0;
+		int ignorant = 0;
+
+		std::list<District*>::iterator it = districts.begin();
+		while (it != districts.end()) {
+			District* dist = *it;
+			zombies += dist->zombieTotal();
+			alarmed += dist->alarmedTotal();
+			ignorant += dist->ignorantTotal();
+			it++;
+		}
+
+		std::cout << std::setw(18) << "ALL ZOMBIES: " << zombies << std::setw(19) << "ALL ALARMED: " << alarmed << std::setw(18);
+		std::cout << "ALL IGNORANT: " << ignorant << std::setw(18) << "ALL DENIZENS: " << zombies + alarmed + ignorant << endl;
+	}
+
+	/**
+	* Divides total population number into random proportions for each district and generates denizens. 
+	* Each district's population number corresponds to an element of the int array popDist[], each of which 
+	* is assigned a random value and multiplied by a coefficient to match up with the given total population. 
+	* Due to rounding problems, any leftover is added to the district with the smallest population size.
+	**/
+	void populateDistrict() {
+		
+		array<int, 6>popDist;
+		
+		int randSum;
+		double coefficient;
+		double leftover;
+		int minimum;
+		int total = 2000;
+
+		random_device ran;
+
+		do {
+			randSum = 0;
+			coefficient = 0;
+			leftover = total;
+			minimum = 0;
+
+			//Assigns random value to all elements of popDist[]
+			for (int g = 0; g < popDist.size(); g++) {
+				popDist[g] = 1+ran() % 100;
+				randSum += popDist[g];
+			};
+
+			//Finds coefficient of total and randSum
+			coefficient = leftover / randSum;
+
+			//Multiplies random popDist[] values by coefficient, updates leftover
+			for (int h = 0; h < popDist.size(); h++) {
+				popDist[h] *= coefficient;
+				leftover -= popDist[h];
+
+				//Finds smallest value of popDist[]
+				if (popDist[h] < popDist[minimum]) {
+					minimum = h;
+				}
+			};
+
+			//If there is any leftover, add it to the minimum value
+			popDist[minimum] += leftover;
+
+		} while (popDist[minimum] == 0); //Don't want any district's initial population to be zero.
+
+		std::string name;
+		std::vector<std::string> namelist;
+		namelist.reserve(2000);
+		//Refers to the location of Residents.txt relative to the SOLUTION, not the header and source files. May be different on VS Code. 
+		std::ifstream in("../../Zombieland/Residents.txt"); 
+
+		if (in.is_open()) {
+			while (getline(in, name)) {
+				if (name.size() > 0)
+					namelist.push_back(name);
+			}in.close();
+		}
+		else std::cout << "Unable to open file :(" << std::endl;
+
+		//Generates and adds the number of denizens set by popDist[] for each district
+		int popcount = 0;
+		list<District*>::iterator it = districts.begin();
+		while (it != districts.end()) {
+			District* dist = *it;
+
+			for (int i = 0; i < popDist[popcount]; i++) {
+				string newname = namelist[i];
+				Denizen* d = new Ignorant(newname);
+				dist->addDenizen(d);
+			}
+			popcount++;
+			it++;
+
+		}
+
+		//How many zombies and in which district to start
+		//Hardcode zombie amount and location to start, make customizable by user later
+		//Bigger district starts off with x amount of zombies- randomize?
+	}
+
+	void createZombie(District* dist, int n) {
+		list<Denizen*>* newlist = dist->getPopulace;
+		random_device rand;
+		int listSize = newlist->size();
+		int random_Denizen = rand() % listSize;
+	}
 
 };
 
