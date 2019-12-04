@@ -38,6 +38,11 @@ public:
 		}
 	}
 
+	//setter for turnOver
+	void setTurnOver(bool inputBool) {
+		turnOver = inputBool;
+	}
+
 };
 
 

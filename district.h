@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <iostream>
+#include <random>
 
 class District {
 private:
@@ -23,6 +24,10 @@ public:
 	int ignorantTotal() { return ignorant; }
 
 	void addDenizen(Denizen* de) { populace.push_back(de); }
+	///////////////////////////
+	////////////////////////
+	//////////////////////
+	//////////////////START UNIT TESTING HERE!!!!!
 
 	//iterate through the population in the main
 	void setBiteChance(Denizen inputDenizen) {
@@ -51,7 +56,7 @@ public:
 			return;
 		}
 		sortPopulace(); //sort populace in descending order by bite chance
-		std::list<iterator> it = populace.begin(); //iterator pointing to the beginning of the list
+		std::list<Denizen*>::<iterator> it = populace.begin(); //iterator pointing to the beginning of the list
 		for (int i = zombie; i != 0; i--) { //for loop that runs for the number of zombiest there are
 			while (it != populace.end()) { //as long as we are not at the end of the populace, keep iterating
 				if (*it->getStatus != "zombie") { //check if we are at zombies
@@ -61,31 +66,81 @@ public:
 			}
 		}
 
-		for (int i = zombie; (i != 0) && (!biteAttempt.empty()); i--) { //iterate through all the zombies as long as there are people in the queue
-
+		for (int i = zombie; (i != 0) && (!biteAttempt.empty()); i--) { //iterate through for the number of zombies as long as there are people in the queue
+			std::list<Denizen*>::<iterator> zom = populace.end(); //iterator to the end of the list (should point to the zombies)
+			while (zom == (zom->getStatus() == "zombie")) { //go through the list for the number of zombies
+				zom--; //decrement the iterator
+				zom->setTurnOver(true); //simulate that a zombie attempted to bite and used their turn this time tick
+			}
+			random_device ran;
+			int prob = 1 + ran() % 10;
+			if (prob <= 8) { //bite successful
+				std::list<Denizen*>::<iterator> del = populace.begin();
+				while (del != biteAttempt.begin()) { //until we have found the correct person in the list, continue incrementing the iterator
+					del++; 
+				}
+				populace.end() = new Zombie(del->getName()); //create a new zombie and push it to the end of the list
+				populace.erase(del); //delete the person at that iterator
+				populace.end()->setTurnOver(true); //set the new zombies turnOver to be true
+				biteAttempt.pop(); //delete the person from the queue
+			}
+			else { //bite unsuccessful
+				if (biteAttempt.begin()->getStatus() == "ignorant";) {
+					std::list<Denizen*>::<iterator> ig = populace.begin();
+					while (ig != biteAttempt.begin()) {
+						ig++;
+					}
+					populace.end() = new Alarmed(ig->getName()); //create a new alarmed and push it to the list
+					populace.erase(ig); //delete ignorant
+					populace.end()->setTurnOver(true); //set turnover
+					biteAttempt.pop(); //delete the person from teh queue
+				}
+				if (biteAttempt.begin()->getStatus() == "alarmed") {
+					biteAttempt.begin()->setTurnOver(true); //set the turn over to be true for the alarmed person 
+				}
 		}
 	}
 
-	//bite()	
-	/**
-	* Each district checks to see if there are zombies, if yes- done
-	* then creates a queue of denizens based on bite chance that is the done
-	* size of the # of zombies which pushes denizens in based on bite chance, done
-	* and a for loop for # of zombies which determines whether bite was successful-
-	*	If success,
-	* Another person is pushed into the queue if that person in the queue moves to another district
-	* Map or list of denizens sorted by bite chance
-	* change turnOver status
-	**/
-
-	//alarmedTellIgnorant()	
-	/**
-	* Each district checks to see if there are alarmed, if yes-
-	* for loop the size of numalarmed
-	* iterate through list of people
-	* if ignorant, delete them and create a new alarmed
-	* change their turnOver status once they have been created
-	**/
+	void alarmedTellIgnorant() {
+		if (alarmed != 0) { //check to make sure there are actually alarmed people in the district
+			if (alarmed >= ignorant){ //if there are more alarmed denizens, only iterate through telling people for the number of ignorant
+				for (int i = ignorant; i >= 0; i--) { //set the turn over for the alarmed people
+					std::list<Denizen*>::<iterator> alarm = populace.begin(); //set an iterator to the beginning of the list
+					while (alarm->getStatus != "alarmed") { //increment the iterator until we have found an alarmed person
+						alarm++;
+					}
+					alarm->setTurnOver(true); //set turn over status
+				}
+				std::list<Denizen*>::<iterator> tell = populace.begin(); //another iterator pointing to the beginnning of the list
+				for (int i = ignorant; i >= 0; i--){
+					while (tell.getStatus != "ignorant") { //find an ignorant person
+						tell++;
+					}
+					populace.end() = new Alarmed(tell->getName()); //make a new alarmed person
+					populace.erase(tell); //erase the ignorant person
+					populace.end()->setTurnOver(true); //set the turn over variable
+				}
+			}
+			else { //if there are more ignorant, only iterate through telling people for the number of alarmed
+				for (int i = alarmed; i >= 0; i--) { //set the turn over for the alarmed people
+					std::list<Denizen*>::<iterator> alarm = populace.begin(); //set an iterator to the beginning of the list
+					while (alarm->getStatus != "alarmed") { //increment the iterator until we have found an alarmed person
+						alarm++;
+					}
+					alarm->setTurnOver(true); //set turn over status
+				}
+				std::list<Denizen*>::<iterator> tell = populace.begin(); //another iterator pointing to the beginnning of the list
+				for (int i = alarmed; i >= 0; i--) {
+					while (tell.getStatus != "ignorant") { //find an ignorant person
+						tell++;
+					}
+					populace.end() = new Alarmed(tell->getName()); //make a new alarmed person
+					populace.erase(tell); //erase the ignorant person
+					populace.end()->setTurnOver(true); //set the turn over variable
+				}
+			}
+		}
+	}
 
 	//move()	
 	/**
@@ -98,7 +153,18 @@ public:
 	* District has to update list based on Simville's map each time tick.
 	**/
 
-	//iterate through entire list of denizens and reset turnOver to bool 
+	//needs to be called every time click for every district
+	void resetTurnOver() {
+		std::list<Denizen*>::<iterator> it = populace.begin(); //iterator to the beginning of the populace
+		while (it != populace.end()) { //loop until we have reached the end
+			it->setTurnOver(false); //set the turn over status to be false
+		}
+	}
+	////////////////////////////
+	///////////////////////
+	///////////////////////
+	///////////////////
+	/////////////END OF UNTESTED MATERIAL
 
 	/*
 	* Prints population of zombies, alarmed and ignorant denizens in this district.
