@@ -13,21 +13,37 @@ protected:
 	string name;
 	string status;
 	bool turnOver; //Already did an action this turn- if bit this turn, cannot also move and vice versa. Has to be reset after every time tick
+	int biteChance;
 
 public:
-	Denizen(string name) : name(name) {}
+	Denizen(string name) : name(name) { turnOver = false; } 
 	string getName() { return name; }
 	string getStatus() { return status; }
+	int getBiteChance() { return biteChance; }
 	virtual void speak() = 0;
-	//Needs virutal void Move()
-	//Needs virtual void SetByChance()
+
+	Denizen* operator < (Denizen* const& i2) {
+		if (this->getBiteChance() <= i2->getBiteChance()) {
+			return this;
+		}
+		else {
+			return i2;
+		}
+	}
+
+	//setter for turnOver
+	void setTurnOver(bool inputBool) {
+		turnOver = inputBool;
+	}
 };
 
 class Zombie : public Denizen {
 public:
-	Zombie(string name) : Denizen(name) { status = "Zombie"; }
+	//Zombie constructor
+	Zombie(string name) : Denizen(name) { status = "Zombie"; biteChance = 0; }
+
+	//test method
 	void speak() { cout << "mngfdfgjfdfghdf brains......" << endl; }
-	//convert to ignorant to zombie
 };
 
 class Alarmed : public Denizen {

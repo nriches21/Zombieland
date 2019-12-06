@@ -52,60 +52,64 @@ int main (){
 
 #pragma endregion
 
-	int Days = 0;
-	std::cout << "Number of Days to simulate: ";
-	std::cin >> Days;
-	Days = Days * 4;
+	string playAsk;
+	bool playSim = true;
 
-	// Incorrect input for days triggers user validation 
-	if (std::cin.fail())
-	{
-		do {
-			std::cin.clear();
-			std::cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			std::cout << "PLEASE ENTER A VALID POSITIVE INTEGER." << std::endl;
-			std::cout << "Number of Days: ";
-			std::cin >> Days;
-		} while (std::cin.fail());		
-	}
+	do {
+		int Days = 0;
+		std::cout << "Number of Days to simulate: ";
+		std::cin >> Days;
+		Days = Days * 4;
 
-	bool verbose = false;
-	string verboseAsk;
-	std::cout << "Verbose output for district populations? [Y/N] ";
-	std::cin >> verboseAsk;
-
-	if (verboseAsk == "Y" || verboseAsk == "y") {
-		verbose = true;
-	}
- 
-	string simAsk;
-	bool simOver = false;
-
-	// Main simulation loop
-	do { 
-		for (int i = 0; i < Days; i++) {
-			// Displays day and time 
-			SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
-			simville.hourTick();
-			SetConsoleTextAttribute(hConsole, 7); //Sets text back to white
-			
-			// If true, displays population details per district
-			simville.districtPopulation(verbose);
-
-			// Displays total population in all of Simville
-			simville.showTotal();
-			std::cout << std::endl;
-
-			simville.createZombie(&uni, 5);
+		// Incorrect input for days triggers user validation 
+		if (std::cin.fail())
+		{
+			do {
+				std::cin.clear();
+				std::cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				std::cout << "PLEASE ENTER A VALID POSITIVE INTEGER." << std::endl;
+				std::cout << "Number of Days: ";
+				std::cin >> Days;
+			} while (std::cin.fail());
 		}
 
-		std::cout << "Play simulation again? [Y/N] ";
-		std::cin >> simAsk;
-		if (simAsk != "Y" && simAsk != "y") {
-			simOver = true;
+		bool verbose = false;
+		string verboseAsk;
+		std::cout << "Verbose output for district populations? [Y/N] ";
+		std::cin >> verboseAsk;
+
+		if (verboseAsk == "Y" || verboseAsk == "y") {
+			verbose = true;
 		}
 
-	} while (simOver == false);
+
+		//bool simOver = false;
+
+		// Main simulation loop
+			for (int i = 0; i < Days; i++) {
+				// Displays day and time 
+				SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
+				simville.hourTick();
+				SetConsoleTextAttribute(hConsole, 7); //Sets text back to white
+
+				// If true, displays population details per district
+				simville.districtPopulation(verbose);
+
+				// Displays total population in all of Simville
+				simville.showTotal();
+				std::cout << std::endl;
+
+				simville.createZombie(&uni, 5);
+			}
+
+			std::cout << std::endl << "Play simulation again? [Y/N] ";
+			std::cin >> playAsk;
+			if (playAsk != "Y" && playAsk != "y") {
+			playSim = false;
+			} //Need to reset variables from simville and districts, or it'll just continue and the zombies will carry over from last time
+
+	} while (playSim == true);
+	
 
 	return 0;
 }

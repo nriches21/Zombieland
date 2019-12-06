@@ -182,7 +182,7 @@ public:
 		std::vector<std::string> namelist;
 		namelist.reserve(2000);
 		//Refers to the location of Residents.txt relative to the SOLUTION, not the header and source files. May be different on VS Code. 
-		std::ifstream in("../../Alyssa_Zombieland/Residents.txt"); 
+		std::ifstream in("../Zombieland/Residents.txt"); 
 
 		if (in.is_open()) {
 			while (getline(in, name)) {
