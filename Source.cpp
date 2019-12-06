@@ -34,12 +34,19 @@ int main (){
 
 	Simville simville;
 
-	simville.addDist(new District("Uptown"));
-	simville.addDist(new District("Downtown"));
-	simville.addDist(new District("The University"));
-	simville.addDist(new District("Soho"));	
-	simville.addDist(new District("Medical Hill"));
-	simville.addDist(new District("The Docks"));
+	District upt("Uptown");
+	District dow("Downtown");
+	District uni("The University");
+	District soh("Soho");
+	District med("Medical Hill");
+	District doc("The Docks");
+
+	simville.addDist(&upt);
+	simville.addDist(&dow);
+	simville.addDist(&uni);
+	simville.addDist(&soh);
+	simville.addDist(&med);
+	simville.addDist(&doc);
 
 	simville.populateDistrict();
 
@@ -64,13 +71,14 @@ int main (){
 
 	bool verbose = false;
 	string verboseAsk;
-	std::cout << "Verbose output for district populations? [Y] ";
+	std::cout << "Verbose output for district populations? [Y/N] ";
 	std::cin >> verboseAsk;
 
 	if (verboseAsk == "Y" || verboseAsk == "y") {
 		verbose = true;
 	}
  
+	string simAsk;
 	bool simOver = false;
 
 	// Main simulation loop
@@ -87,8 +95,16 @@ int main (){
 			// Displays total population in all of Simville
 			simville.showTotal();
 			std::cout << std::endl;
+
+			simville.createZombie(&uni, 5);
 		}
-		simOver = true;
+
+		std::cout << "Play simulation again? [Y/N] ";
+		std::cin >> simAsk;
+		if (simAsk != "Y" && simAsk != "y") {
+			simOver = true;
+		}
+
 	} while (simOver == false);
 
 	return 0;

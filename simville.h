@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+#include <windows.h>
+
 #undef max
 
 #include "denizen.h"
@@ -35,30 +37,60 @@ public:
 		if (hourT == 0) {
 			hourT = 6;
 			++dayT;
-			std::cout << endl << std::setw(20) << " " << setfill('=') << std::setw(19) << " DAY ";
+			std::cout << endl << std::setw(17) << " " << setfill('=') << std::setw(19) << " DAY ";
 			std::cout << dayT << " " << std::setw(15) << " " << setfill(' ') << endl;
 			hourTick();
 		}
 		else if (hourT == 24) {
-			std::cout << "DAY " << dayT << ", " << "24:00" << endl;
+			//std::cout << std::setw(34) << "DAY " << dayT << ", " << hourT << ":00" << endl;
 			hourT = 0;
 		}
 		else {
-			std::cout << "DAY " << dayT << ", " << hourT << ":00" << endl;
+			//std::cout << std::setw(34) << "DAY " << dayT << ", " << hourT << ":00" << endl;
 			hourT = (hourT + 6);
 		}
+	}
+
+	string hourShow() {
+		string hours;
+		if (hourT == 0) {
+			//std::cout << std::setw(34) << "DAY " << dayT << ", 24:00" << endl;
+			hours = "DAY " + std::to_string(dayT) + ", 24:00";
+			return hours;
+		}
+		else {
+			hours = "DAY " + std::to_string(dayT) + ", " + std::to_string(hourT - 6) + ":00";
+			return hours;
+		}//std::cout << std::setw(34) << "DAY " << dayT << ", " << hourT - 6 << ":00" << endl;
 	}
 
 	void addDist(District* d) { districts.push_back(d); }
 
 	/*
-	* Prints population of zombies, alarmed and ignorant denizens by individual district.
-	* Only displays if user selects verbose option. 
+	* Prints district name and the time, then calls printPop(verbose) to print district-
+	* specific population. 
 	*/
 	void districtPopulation(bool verbose) {
+		HANDLE hConsole;
+		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		std::list<District*>::iterator it = districts.begin();
 		while (it != districts.end()) {
 			District* dist = *it;
+
+			if (verbose == false) {
+				SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
+				cout << hourShow();
+				SetConsoleTextAttribute(hConsole, 7); //Sets text back to white
+				cout << " " << dist->getName();
+			}
+			else { 			
+				cout << endl << setw(35) << dist->getName() << " District" << endl;
+			
+				SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
+				cout << std::setw(42) << hourShow() << endl;
+				SetConsoleTextAttribute(hConsole, 7); //Sets text back to white
+				cout << setfill('.') << std::setw(80) << " " << setfill(' ') << endl << endl << endl;
+			}
 			dist->printPop(verbose);
 			it++;
 		}
@@ -81,15 +113,27 @@ public:
 			it++;
 		}
 
-		std::cout << std::setw(18) << "ALL ZOMBIES: " << zombies << std::setw(19) << "ALL ALARMED: " << alarmed << std::setw(18);
-		std::cout << "ALL IGNORANT: " << ignorant << std::setw(18) << "ALL DENIZENS: " << zombies + alarmed + ignorant << endl;
+		HANDLE hConsole; //Colored Console Text
+		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		cout << endl << std::setw(12) << "ALL ZOMBIES: ";
+		SetConsoleTextAttribute(hConsole, 4);
+		cout << zombies;
+		SetConsoleTextAttribute(hConsole, 7);
+		cout << std::setw(19) << "ALL ALARMED: ";
+		SetConsoleTextAttribute(hConsole, 6);
+		cout << alarmed;
+		SetConsoleTextAttribute(hConsole, 7);
+		cout << std::setw(18) << "ALL IGNORANT: ";
+		SetConsoleTextAttribute(hConsole, 15);
+		cout << ignorant;
+		SetConsoleTextAttribute(hConsole, 7);
+		cout << std::setw(16) << "ALL TOTAL: " << zombies + alarmed + ignorant << endl << endl;
 	}
 
 	/**
-	* Divides total population number into random proportions for each district and generates denizens. 
-	* Each district's population number corresponds to an element of the int array popDist[], each of which 
-	* is assigned a random value and multiplied by a coefficient to match up with the given total population. 
-	* Due to rounding problems, any leftover is added to the district with the smallest population size.
+	* Generates a random population size for each district, then creates and adds that amount of denizens.
+	* Uses denizen names from the ones provided in Residents.txt file. 
 	**/
 	void populateDistrict() {
 		
@@ -138,7 +182,7 @@ public:
 		std::vector<std::string> namelist;
 		namelist.reserve(2000);
 		//Refers to the location of Residents.txt relative to the SOLUTION, not the header and source files. May be different on VS Code. 
-		std::ifstream in("../../Zombieland/Residents.txt"); 
+		std::ifstream in("../../Alyssa_Zombieland/Residents.txt"); 
 
 		if (in.is_open()) {
 			while (getline(in, name)) {
@@ -150,18 +194,19 @@ public:
 
 		//Generates and adds the number of denizens set by popDist[] for each district
 		int popcount = 0;
+		int namecount = 0;
 		list<District*>::iterator it = districts.begin();
 		while (it != districts.end()) {
 			District* dist = *it;
 
 			for (int i = 0; i < popDist[popcount]; i++) {
-				string newname = namelist[i];
+				string newname = namelist[namecount];
 				Denizen* d = new Ignorant(newname);
 				dist->addDenizen(d);
+				namecount++;
 			}
 			popcount++;
 			it++;
-
 		}
 
 		//How many zombies and in which district to start
@@ -169,11 +214,36 @@ public:
 		//Bigger district starts off with x amount of zombies- randomize?
 	}
 
+	/**
+	* Given a district and n amount of zombies to create, takes a random denizen
+	* from that district's populace list and checks to see if they are already a
+	* zombie. If not, the denizen's name is used to create a new zombie and then deleted.
+	**/
 	void createZombie(District* dist, int n) {
-		list<Denizen*>* newlist = dist->getPopulace;
+		list<Denizen*>* newlist = dist->getPopulace();
 		random_device rand;
-		int listSize = newlist->size();
-		int random_Denizen = rand() % listSize;
+		int listSize = newlist->size(); 
+		int randDenizen;
+
+		for (int i = 0; i < n; i++) {
+			list<Denizen*>::iterator itr = newlist->begin();
+			randDenizen = rand() % listSize; //Make sure we don't advance beyond list size
+			advance(itr, randDenizen);
+
+			Denizen* D = *itr;
+			list<Denizen*>::iterator newit = itr;
+
+			if (D->getStatus() != "Zombie") { //Not already a zombie, make zombie
+				string Dname = D->getName();
+				Zombie Z(Dname);
+				dist->addDenizen(new Zombie(Dname));
+				newlist->erase(newit);
+			}
+			else{ //Is already a zombie
+				cout << "---------------------- " << D->getName() << " Is already a Zombie!!! -------------------------- " << endl;
+				// If a denizen tries to alarm a zombie, they should get bitten.  
+			}
+		}
 	}
 
 };

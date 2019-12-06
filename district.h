@@ -6,6 +6,7 @@
 #include <list>
 #include "denizen.h"
 #include <map>
+#include <windows.h>
 
 using std::cout;
 using std::endl;
@@ -69,22 +70,34 @@ public:
 		ignorant = 0;
 		int column = 0;
 
-		if (verbose != false) {
-			cout << this->getName() << " District" << endl;
-		}
+		HANDLE hConsole;
+		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
 		list<Denizen*>::iterator it = populace.begin();
 		while (it != populace.end()) {
 
-			Denizen* pointr = *it;/*
+			Denizen* pointr = *it;
 			if (verbose != false) {
-				if (column == 4) {
+				if (column == 6) {
 					column = 0;
 					cout << endl;
 				}
 				column++;
 
-				//cout << std::setw(20) << pointr->getName();
-			}*/
+				if (pointr->getStatus() == "Zombie") {
+					SetConsoleTextAttribute(hConsole, 4); //Red Text
+					cout << std::setw(13) << pointr->getName();
+					SetConsoleTextAttribute(hConsole, 7); //Back to white Text
+				}
+				else if (pointr->getStatus() == "Alarmed") {
+					SetConsoleTextAttribute(hConsole, 6); //Yellow Text
+					cout << std::setw(13) << pointr->getName();
+					SetConsoleTextAttribute(hConsole, 7); //Back to white Text
+				}
+				else {
+					cout << std::setw(13) << pointr->getName();
+				}
+			}
 
 			if (pointr->getStatus() == "Zombie") ++zombies;
 			else if (pointr->getStatus() == "Alarmed") ++alarmed;
@@ -93,9 +106,35 @@ public:
 		}
 
 		if (verbose != false) {
-			cout << endl << std::setw(18) << "ZOMBIES: " << zombies << std::setw(19) << "ALARMED: " << alarmed << std::setw(18);
-			cout << "IGNORANT: " << ignorant << std::setw(18) << "TOTAL: " << zombies + alarmed + ignorant << endl;
-			cout << setfill('-') << std::setw(80) << " " << setfill(' ') << endl << endl;
+			cout << endl << endl << std::setw(12) << "ZOMBIES: ";
+			SetConsoleTextAttribute(hConsole, 4);
+			cout << zombies;
+			SetConsoleTextAttribute(hConsole, 7);
+			cout << std::setw(19) << "ALARMED: ";
+			SetConsoleTextAttribute(hConsole, 6);
+			cout << alarmed;
+			SetConsoleTextAttribute(hConsole, 7);
+			cout << std::setw(18) << "IGNORANT: ";
+			SetConsoleTextAttribute(hConsole, 15);
+			cout << ignorant;
+			SetConsoleTextAttribute(hConsole, 7); 
+			cout << std::setw(16) << "TOTAL: " << zombies + alarmed + ignorant << endl;
+			cout << setfill('=') << std::setw(80) << " " << setfill(' ') << endl << endl;
+		}
+		else {
+			cout << std::setw(15) << std::right << "ZOMBIES: ";
+			SetConsoleTextAttribute(hConsole, 4);
+			cout << zombies;
+			SetConsoleTextAttribute(hConsole, 7);
+			cout << std::setw(12) << std::right << "ALARMED: ";
+			SetConsoleTextAttribute(hConsole, 6);
+			cout << alarmed;
+			SetConsoleTextAttribute(hConsole, 7);
+			cout << std::setw(12) << std::right << "IGNORANT: ";
+			SetConsoleTextAttribute(hConsole, 15);
+			cout << ignorant;
+			SetConsoleTextAttribute(hConsole, 7);
+			cout << std::setw(10) << std::right << "TOTAL: " << zombies + alarmed + ignorant << endl;
 		}
 	}
 
