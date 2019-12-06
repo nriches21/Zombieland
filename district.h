@@ -16,6 +16,7 @@ using std::setw;
 using std::setfill;
 using std::list;
 using std::map;
+using std::queue;
 
 
 class District {
@@ -32,13 +33,10 @@ public:
 	District(string name) : name(name), zombies(0), alarmed(0), ignorant(0) {}
 
 	string getName() const{ return name; }
-
 	int zombieTotal() { return zombies; }
 	int alarmedTotal() { return alarmed; }
 	int ignorantTotal() { return ignorant; }
-
 	list<Denizen*>* getPopulace() { return &populace; }
-
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
 
 	//From Nora branch
@@ -55,7 +53,7 @@ public:
 
 	//deleted compare() from Nora branch
 
-	void sortPopulace() { //This actually works!!
+	void sortPopulace() { //From Nora branch
 		populace.sort(); //automatically sorts in descending order(using the operator < overload int eh denizen class)
 	}
 
@@ -69,6 +67,37 @@ public:
 	* Another person is pushed into the queue if that person in the queue moves to another district
 	* Map or list of denizens sorted by bite chance 
 	**/
+
+	void bite() {
+
+		queue<Denizen*> biteAttempt;
+		
+		if (zombies > 0) {
+			sortPopulace();
+			int zNumber = 0;
+			//Add to the queue as many denizens as there are zombies
+			while (zNumber <= zombies) { 
+				std::list<Denizen*>::iterator it = populace.begin();
+				while (it != populace.end()) {
+					Denizen* Dpointer = *it;
+					if (Dpointer->getStatus() == "Zombie") {
+						//it++;
+						break;	// First element of sorted populace is zombie, nothing to bite- 
+								// Don't need to iterate through list, since zombies have the lowest biteChance
+					}
+					else {
+						biteAttempt.push(Dpointer);
+						it++;
+						zNumber++; //One more zombie has been added to the queue
+					}
+				}
+			} 
+			/*for (int i = 0; i < zombies; i++) {
+
+			}*/
+		}
+		else { return; }
+	}
 
 	/*void bite() {
 		if (zombie != 0) {

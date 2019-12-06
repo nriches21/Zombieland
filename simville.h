@@ -145,7 +145,7 @@ public:
 		double leftover;
 		int minimum;
 		//int total = 2000;
-		int total = 50;
+		int total = 50; //For testing, delete later
 
 		random_device ran;
 
@@ -211,9 +211,6 @@ public:
 			it++;
 		}
 
-		//How many zombies and in which district to start
-		//Hardcode zombie amount and location to start, make customizable by user later
-		//Bigger district starts off with x amount of zombies- randomize?
 	}
 
 	/**
