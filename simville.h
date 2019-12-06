@@ -73,6 +73,7 @@ public:
 	void districtPopulation(bool verbose) {
 		HANDLE hConsole;
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
 		std::list<District*>::iterator it = districts.begin();
 		while (it != districts.end()) {
 			District* dist = *it;
@@ -143,7 +144,8 @@ public:
 		double coefficient;
 		double leftover;
 		int minimum;
-		int total = 2000;
+		//int total = 2000;
+		int total = 50;
 
 		random_device ran;
 

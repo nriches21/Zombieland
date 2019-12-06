@@ -35,6 +35,10 @@ public:
 	void setTurnOver(bool inputBool) {
 		turnOver = inputBool;
 	}
+
+	void setBiteChance(int i) {
+		biteChance = i;
+	}
 };
 
 class Zombie : public Denizen {
@@ -48,7 +52,7 @@ public:
 
 class Alarmed : public Denizen {
 public:
-	Alarmed(string name) : Denizen(name) { status = "Alarmed"; }
+	Alarmed(string name) : Denizen(name) { status = "Alarmed"; biteChance = 5;}
 	void speak() { cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAA!!!" << endl; }
 	//convert to ignorant to alarmed
 };
@@ -58,7 +62,7 @@ class Ignorant : public Denizen {
 	//Work district name
 	//Home district name
 public:
-	Ignorant(string name) : Denizen(name) { status = "Ignorant"; }
+	Ignorant(string name) : Denizen(name) { status = "Ignorant"; biteChance = 20;}
 	void speak() { cout << "My word- what a fine, normal day in Simville!" << endl; }
 };
 

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <list>
+#include <random>
+#include <queue>
 #include "denizen.h"
 #include <map>
 #include <windows.h>
@@ -24,6 +26,7 @@ private:
 	int zombies;
 	int alarmed;
 	int ignorant;
+	int density; //An int between 0 - 50 to be set when district is initialized
 
 public:
 	District(string name) : name(name), zombies(0), alarmed(0), ignorant(0) {}
@@ -37,6 +40,24 @@ public:
 	list<Denizen*>* getPopulace() { return &populace; }
 
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
+
+	//From Nora branch
+	void setBiteChance(Denizen* inputDenizen) {
+		if (inputDenizen->getStatus() == "Alarmed") {
+			inputDenizen->setBiteChance(25 + density);
+			//inputDenizen->biteChance = 25 + density; //set the bite chance to be 25 (base chance for alarmed) and add the density of the district (some number between 0 and 50)
+		}
+		if (inputDenizen->getStatus() == "Ignorant") {
+			inputDenizen->setBiteChance(45 + density);
+			//inputDenizen->biteChance = 45 + density; //set the bite chance to be 45 (base chance for ignorant) and add the density of the district (some number between 0 and 50)
+		}
+	}
+
+	//deleted compare() from Nora branch
+
+	void sortPopulace() { //This actually works!!
+		populace.sort(); //automatically sorts in descending order(using the operator < overload int eh denizen class)
+	}
 
 	//bite()	
 	/**
@@ -153,6 +174,8 @@ public:
 				else {
 					cout << std::setw(13) << pointr->getName();
 				}
+
+				cout << ":  " << pointr->getBiteChance() << "  +++++++++++++++++++++++++++++++++" << endl;
 			}
 
 			if (pointr->getStatus() == "Zombie") ++zombies;

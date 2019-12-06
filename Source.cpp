@@ -48,6 +48,11 @@ int main (){
 	simville.addDist(&med);
 	simville.addDist(&doc);
 
+	Ignorant p1("Person one");//Testing
+	Ignorant p2("Person two");//Testing
+	uni.addDenizen(&p1);//Testing
+	uni.addDenizen(&p2);//Testing
+
 	simville.populateDistrict();
 
 #pragma endregion
@@ -87,6 +92,15 @@ int main (){
 
 		// Main simulation loop
 			for (int i = 0; i < Days; i++) {
+
+				//testing nora branch district and denizen
+				p1.setBiteChance(50); //Testing
+				p2.setBiteChance(100); //Testing
+				uni.sortPopulace();//Testing
+
+
+
+
 				// Displays day and time 
 				SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
 				simville.hourTick();
@@ -99,7 +113,8 @@ int main (){
 				simville.showTotal();
 				std::cout << std::endl;
 
-				simville.createZombie(&uni, 5);
+				simville.createZombie(&uni, 1); //Testing
+				
 			}
 
 			std::cout << std::endl << "Play simulation again? [Y/N] ";
