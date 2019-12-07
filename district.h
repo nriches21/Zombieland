@@ -107,7 +107,7 @@ public:
 	}*/
 
 	//Create biteAttempt cue for bite() to use- find Qsize number of minimum values to push to queue
-	void createQueue(int Qsize) {
+	/*void createQueue(int Qsize) {
 		queue<Denizen*> biteAttempt;
 		list<Denizen*>::iterator it1 = populace.begin();
 		list<Denizen*> Cpopulace;
@@ -124,10 +124,10 @@ public:
 			} 
 			
 			cout << "Stuff.";
-		}
+		}*/
 		//cout << "Queue created. Copy of populace: " << Cpopulace.size() << "Populace : " << populace.size() << "Queue : " << biteAttempt.size() << endl;
 
-	}
+	//}
 
 	//bite()	
 	/**
