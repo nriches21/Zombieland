@@ -48,13 +48,13 @@ int main (){
 	simville.addDist(&med);
 	simville.addDist(&doc);
 
-	Ignorant p1("Person one");//Testing
-	Ignorant p2("Person two");//Testing
-	uni.addDenizen(&p1);//Testing
-	uni.addDenizen(&p2);//Testing
+	//Ignorant p1("Person one");//Testing
+	//Ignorant p2("Person two");//Testing
+	//uni.addDenizen(&p1);//Testing
+	//uni.addDenizen(&p2);//Testing
 
-	Ignorant s1("Sort one");//Testing
-	Ignorant s2("Sort two");//Testing
+	Ignorant s1("Sort one", "Downtown", "The University");//Testing
+	Ignorant s2("Sort two", "Downtown", "The University");//Testing
 	s1.setBiteChance(30);
 	s2.setBiteChance(80);
 	uni.addDenizen(&s1);//Testing
@@ -101,9 +101,9 @@ int main (){
 			for (int i = 0; i < Days; i++) {
 
 				//testing nora branch district and denizen
-				p1.setBiteChance(50); //Testing
-				p2.setBiteChance(100); //Testing
-				uni.sortBiteChance();//Testing
+				s1.setBiteChance(50); //Testing
+				s2.setBiteChance(100); //Testing
+				//uni.sortBiteChance();//Testing
 				//uni.sortPopulace();
 
 

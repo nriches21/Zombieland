@@ -38,6 +38,9 @@ public:
 	int ignorantTotal() { return ignorant; }
 	list<Denizen*>* getPopulace() { return &populace; }
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
+	void removeDenizen(Denizen* de) { populace.remove(de); }
+
+	void addConnection(char direction, District* location) { connections.insert({ direction, location }); }
 
 	//From Nora branch
 	void setBiteChance(Denizen* inputDenizen) {
@@ -52,11 +55,12 @@ public:
 	}
 
 	//deleted compare() from Nora branch
+
 	//bool sortBiteChance(Denizen& A, Denizen& B) {
 	//	return (A.getBiteChance() < B.getBiteChance());
 	//}
 
-	bool sortBiteChance() {
+	/*bool sortBiteChance() {
 		list<Denizen*>::iterator it1 = populace.begin(); //first
 		list<Denizen*>::iterator it2 = populace.end();
 		int middle = populace.size() / 2;
@@ -84,7 +88,7 @@ public:
 			it2++;
 		}
 
-	}
+	}*/
 
 	//bool biteChanceFirst(Denizen* a, Denizen* b) { return a->getBiteChance() < b->getBiteChance(); }
 
@@ -100,6 +104,7 @@ public:
 			it2++;
 		}
 	}*/
+
 	//bite()	
 	/**
 	* Each district checks to see if there are zombies, if yes- 
@@ -111,7 +116,7 @@ public:
 	* Map or list of denizens sorted by bite chance 
 	**/
 
-	/*void bite() {
+	/*void bite() { //Alyssa's version of Nora's bite() function, neither currently work 
 
 		queue<Denizen*> biteAttempt;
 		
@@ -142,7 +147,7 @@ public:
 		else { return; }
 	}*/
 
-/*	void bite() {
+/*	void bite() { //From Nora's branch
 		if (zombies != 0) {
 			queue<Denizen*> biteAttempt; //queue of denizens that are going to be attempted to be bitten by zombies based on bite chance
 			//sortPopulace(); //sort populace in descending order by bite chance

@@ -203,7 +203,36 @@ public:
 
 			for (int i = 0; i < popDist[popcount]; i++) {
 				string newname = namelist[namecount];
-				Denizen* d = new Ignorant(newname);
+				int randDist = 1 + ran() % 6;
+				string w;
+				string h;
+				switch (randDist) {
+				case 1: {
+					w = "Uptown";
+					h = "Downtown";
+					break; }
+				case 2: {
+					w = "Downtown";
+					h = "The University";
+					break; }
+				case 3: {
+					w = "The University";
+					h = "Soho";
+					break; }
+				case 4: {
+					w = "Soho";
+					h = "Medical Hill";
+					break; }
+				case 5: {
+					w = "Medical Hill";
+					h = "The Docks";
+					break; }
+				case 6: {
+					w = "The Docks";
+					h = "Uptown";
+					break; }
+				}
+				Denizen* d = new Ignorant(newname, w, h);
 				dist->addDenizen(d);
 				namecount++;
 			}

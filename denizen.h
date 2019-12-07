@@ -22,14 +22,17 @@ public:
 	int getBiteChance() { return biteChance; }
 	virtual void speak() = 0;
 
-	/*Denizen& operator <(Denizen* const& i2) {
+	Denizen* operator < (Denizen* const& i2) {
 		if (this->getBiteChance() <= i2->getBiteChance()) {
-			return *this;
+			return this;
 		}
 		else {
-			return *i2;
+			return i2;
 		}
-	}*/
+	}
+
+	//getter for turnOver
+	bool getTurnOver() { return turnOver; }
 
 	//setter for turnOver
 	void setTurnOver(bool inputBool) {
@@ -58,14 +61,14 @@ public:
 };
 
 class Ignorant : public Denizen {
-//private:
-	//Work district name
-	//Home district name
+private:
+	string workDistrict;
+	string homeDistrict;
 public:
-	Ignorant(string name) : Denizen(name) { status = "Ignorant"; biteChance = 20;}
+	Ignorant(string name, string inputWork, string inputHome) : Denizen(name) { status = "Ignorant"; workDistrict = inputWork; homeDistrict = inputHome; }
+	string getWork() { return workDistrict; }
+	string getHome() { return homeDistrict; }
 	void speak() { cout << "My word- what a fine, normal day in Simville!" << endl; }
-	//Set work district
-	//Set home district
 };
 
 #endif
