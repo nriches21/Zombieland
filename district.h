@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <list>
 #include <random>
+#include <algorithm>
 #include <queue>
 #include "denizen.h"
 #include <map>
@@ -105,6 +106,29 @@ public:
 		}
 	}*/
 
+	//Create biteAttempt cue for bite() to use- find Qsize number of minimum values to push to queue
+	void createQueue(int Qsize) {
+		queue<Denizen*> biteAttempt;
+		list<Denizen*>::iterator it1 = populace.begin();
+		list<Denizen*> Cpopulace;
+		Cpopulace = populace;
+		//std::copy(populace.begin(), populace.end(), Cpopulace.begin());
+		for (int i = 0; i < Qsize; i++) {
+			list<Denizen*>::iterator iter = std::min_element(Cpopulace.begin(), Cpopulace.end());
+			while (iter != Cpopulace.end()) {
+				Denizen* D = *iter;
+				biteAttempt.push(D);
+				list<Denizen*>::iterator iter8 = iter;
+				iter++;
+				Cpopulace.erase(iter);
+			} 
+			
+			cout << "Stuff.";
+		}
+		//cout << "Queue created. Copy of populace: " << Cpopulace.size() << "Populace : " << populace.size() << "Queue : " << biteAttempt.size() << endl;
+
+	}
+
 	//bite()	
 	/**
 	* Each district checks to see if there are zombies, if yes- 
@@ -116,7 +140,7 @@ public:
 	* Map or list of denizens sorted by bite chance 
 	**/
 
-	/*void bite() { //Alyssa's version of Nora's bite() function, neither currently work 
+	/*void bite() { //Alyssa's version of Nora's bite() function, neither of which currently works 
 
 		queue<Denizen*> biteAttempt;
 		
@@ -243,7 +267,12 @@ public:
 					cout << std::setw(13) << pointr->getName();
 				}
 
-				cout << ":  " << pointr->getBiteChance() << "  +++++++++++++++++++++++++++++++++" << endl;
+				cout << ": " << std::left << setw(4) << pointr->getBiteChance() << "  -  ";
+				Ignorant* ig = dynamic_cast<Ignorant*>(pointr);
+				if (ig) {
+					cout << "Home: " << setw(20) <<  ig->getHome() << "Work: " << setw(20) << ig->getWork();
+				}
+				cout << std::right << endl;
 			}
 
 			if (pointr->getStatus() == "Zombie") ++zombies;

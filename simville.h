@@ -93,7 +93,9 @@ public:
 				cout << setfill('.') << std::setw(80) << " " << setfill(' ') << endl << endl << endl;
 			}
 			dist->printPop(verbose);
+			dist->createQueue(5);
 			it++;
+					
 		}
 	}
 
@@ -232,7 +234,9 @@ public:
 					h = "Uptown";
 					break; }
 				}
+				int biteChance = ran() % 100 + 20;
 				Denizen* d = new Ignorant(newname, w, h);
+				d->setBiteChance(biteChance);
 				dist->addDenizen(d);
 				namecount++;
 			}
@@ -263,12 +267,38 @@ public:
 
 			if (D->getStatus() != "Zombie") { //Not already a zombie, make zombie
 				string Dname = D->getName();
-				Zombie Z(Dname);
 				dist->addDenizen(new Zombie(Dname));
 				newlist->erase(newit);
 			}
 			else{ //Is already a zombie
 				cout << std::endl << "---------------------- " << D->getName() << " Is already a Zombie!!! -------------------------- " << endl;
+				// If a denizen tries to alarm a zombie, they should get bitten.  
+			}
+		}
+	}
+
+	void createAlarmed(District* dist, int n) {
+		list<Denizen*>* newlist = dist->getPopulace();
+		random_device rand;
+		int listSize = newlist->size();
+		int randDenizen;
+
+		for (int i = 0; i < n; i++) {
+			list<Denizen*>::iterator itr = newlist->begin();
+			randDenizen = rand() % listSize; //Basically the same as createZombie
+			advance(itr, randDenizen);
+
+			Denizen* D = *itr;
+			list<Denizen*>::iterator newit = itr;
+
+			if (D->getStatus() == "Ignorant") {
+				string Dname = D->getName();
+				int chance = D->getBiteChance() - 20;
+				dist->addDenizen(new Alarmed(Dname, chance));
+				newlist->erase(newit);
+			}
+			else { //Is either Alarmed or a Zombie
+				cout << std::endl << "---------------------- " << D->getName() << " Can't be alarmed!!! -------------------------- " << std::endl;
 				// If a denizen tries to alarm a zombie, they should get bitten.  
 			}
 		}

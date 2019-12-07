@@ -59,6 +59,8 @@ int main (){
 	s2.setBiteChance(80);
 	uni.addDenizen(&s1);//Testing
 	uni.addDenizen(&s2);//Testing
+	s1.setBiteChance(50); //Testing
+	s2.setBiteChance(100); //Testing
 
 	simville.populateDistrict();
 
@@ -73,7 +75,6 @@ int main (){
 		std::cin >> Days;
 		Days = Days * 4;
 
-		// Incorrect input for days triggers user validation 
 		if (std::cin.fail())
 		{
 			do {
@@ -94,20 +95,8 @@ int main (){
 			verbose = true;
 		}
 
-
-		//bool simOver = false;
-
 		// Main simulation loop
 			for (int i = 0; i < Days; i++) {
-
-				//testing nora branch district and denizen
-				s1.setBiteChance(50); //Testing
-				s2.setBiteChance(100); //Testing
-				//uni.sortBiteChance();//Testing
-				//uni.sortPopulace();
-
-
-
 
 				// Displays day and time 
 				SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
@@ -122,7 +111,8 @@ int main (){
 				std::cout << std::endl;
 
 				simville.createZombie(&uni, 1); //Testing
-				
+				simville.createAlarmed (&uni, 1);
+
 			}
 
 			std::cout << std::endl << "Play simulation again? [Y/N] ";

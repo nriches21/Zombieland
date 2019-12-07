@@ -55,7 +55,7 @@ public:
 
 class Alarmed : public Denizen {
 public:
-	Alarmed(string name) : Denizen(name) { status = "Alarmed"; biteChance = 5;}
+	Alarmed(string name, int chance) : Denizen(name) { status = "Alarmed"; biteChance = chance; }
 	void speak() { cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAA!!!" << endl; }
 	//convert to ignorant to alarmed
 };
