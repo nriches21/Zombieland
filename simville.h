@@ -239,7 +239,7 @@ public:
 				newlist->erase(newit);
 			}
 			else{ //Is already a zombie
-				cout << "---------------------- " << D->getName() << " Is already a Zombie!!! -------------------------- " << endl;
+				cout << std::endl << "---------------------- " << D->getName() << " Is already a Zombie!!! -------------------------- " << endl;
 				// If a denizen tries to alarm a zombie, they should get bitten.  
 			}
 		}

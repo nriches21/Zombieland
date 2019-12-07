@@ -53,6 +53,13 @@ int main (){
 	uni.addDenizen(&p1);//Testing
 	uni.addDenizen(&p2);//Testing
 
+	Ignorant s1("Sort one");//Testing
+	Ignorant s2("Sort two");//Testing
+	s1.setBiteChance(30);
+	s2.setBiteChance(80);
+	uni.addDenizen(&s1);//Testing
+	uni.addDenizen(&s2);//Testing
+
 	simville.populateDistrict();
 
 #pragma endregion
@@ -96,7 +103,8 @@ int main (){
 				//testing nora branch district and denizen
 				p1.setBiteChance(50); //Testing
 				p2.setBiteChance(100); //Testing
-				uni.sortPopulace();//Testing
+				uni.sortBiteChance();//Testing
+				//uni.sortPopulace();
 
 
 
