@@ -57,22 +57,24 @@ public:
 	//}
 
 	bool sortBiteChance() {
-		list<Denizen*>::iterator it1 = populace.begin();
-		list<Denizen*>::iterator it2 = populace.begin();
-		it2++;
+		list<Denizen*>::iterator it1 = populace.begin(); //first
+		list<Denizen*>::iterator it2 = populace.end();
+		int middle = populace.size() / 2;
+		list<Denizen*>::iterator it3 = it1; //middle
+		advance(it2, middle); //middle
 	
 		while (it1 != populace.end() && it2 != populace.end()) {
 			Denizen* Dit1 = *it1;
 			Denizen* Dit2 = *it2;
-			bool sortything;
-
+			Denizen* Dit3 = *it3;
 			
-			if (Dit1->getBiteChance() < Dit2->getBiteChance()) {
-				cout << "Dit1: " << Dit1->getBiteChance() <<" < Dit2: " << Dit2->getBiteChance() << endl;
-				return true;
+			if (Dit1->getBiteChance() < Dit3->getBiteChance()) {
+				//cout << "Dit1: " << Dit1->getBiteChance() <<" < Dit2: " << Dit2->getBiteChance() << endl;
+				//return true;
+
+				//Call partition
 			}
 			//else if (Dit1->getBiteChance() == Dit2->getBiteChance()){
-			
 			//}
 			else {
 				cout << "Dit1: " << Dit1->getBiteChance() << " > Dit2: " << Dit2->getBiteChance() << endl;
@@ -195,25 +197,13 @@ public:
 			return;
 		}
 		
-
 	}*/
-
-
-	//move()	
-	/**
-	* Iterate through the entire list of denizens, check if denizen already made an action (turnOver bool)
-	* If not, then check if ignorant; if ignorant, check time tick, and if they move this tick, then move to home or work.
-	* Simville has a map of denizens and districts. move() takes a pointer to Simville's map and modifies denizen locations.
-	* map<denizen*, district name string>some_map 
-	* After move, delete denizen from this list and push new pair to simville's map.
-	* Zombie and Alarmed move- move into any connected district at random. Delete from list and push new pair to map. 
-	* District has to update list based on Simville's map each time tick.	
-	**/
 
 	/*
 	* Prints population of zombies, alarmed and ignorant denizens in this district.
 	* Also prints the name of each denizen.
 	*/
+
 	void printPop(bool verbose) {
 		zombies = 0;
 		alarmed = 0;
