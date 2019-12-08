@@ -189,6 +189,7 @@ public:
 		if (zombies != 0) {
 
 			fillQueue(zombies); //Get as many Denizens to bite as there are zombies
+			cout << "biteAttempt size: " << biteAttempt.size() << endl;
 			int i = 0;
 			std::list<Denizen*>::iterator zom = populace.begin(); //iterator to the end of the list (should point to the zombies)
 			while (zom != populace.end()) {
@@ -199,6 +200,7 @@ public:
 				}
 				if (i == zombies) { break; }
 				zom++;
+				
 			}
 
 			srand(time(0));
@@ -207,6 +209,7 @@ public:
 			while (del != populace.end() && biteAttempt.size() != 0) {
 				int prob = 1 + rand() % 10;
 				if (prob <= 7) { //bite successful
+					//cout << "biteAttempt size: " << biteAttempt.size() << endl;
 					Denizen* d = *del;
 					if (d == biteAttempt.front()) {
 						populace.push_back(new Zombie(d->getName()));
@@ -214,12 +217,14 @@ public:
 						populace.back()->setTurnOver(true); //set the new Zombies turnOver to be true
 						cout << d->getName() << " has been bitten." << endl;
 						biteAttempt.pop(); //delete the person from the queue
+						del = populace.begin();
+						cout << "biteAttempt size: " << biteAttempt.size() << endl;
 					}
 					++del;
 				}
 				
 				else { //bite unsuccessful
-						
+					
 					if (biteAttempt.front()->getStatus() == "Ignorant") {
 						Denizen* i = *del;
 						if (i == biteAttempt.front()) {
@@ -229,6 +234,8 @@ public:
 							populace.back()->setTurnOver(true); //set turnover
 							cout << i->getName() << " avoided being bitten and is now alarmed." << endl;
 							biteAttempt.pop(); //delete the person from teh queue
+							del = populace.begin();
+							cout << "biteAttempt size: " << biteAttempt.size() << endl;
 						}
 						del++;
 					}
@@ -237,6 +244,8 @@ public:
 						cout << biteAttempt.front()->getName() << " avoided being bitten and is already alarmed." << endl;
 						biteAttempt.front()->setTurnOver(true); //set the turn over to be true for the alarmed person
 						biteAttempt.pop();
+						del = populace.begin();
+						cout << "biteAttempt size: " << biteAttempt.size() << endl;
 					}
 				}
 			}
