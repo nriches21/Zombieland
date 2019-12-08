@@ -113,31 +113,39 @@ public:
 	//Create biteAttempt cue for bite() to use- find Qsize number of minimum values to push to queue
 	void createQueue(int Qsize) {
 		queue<Denizen*> biteAttempt;
-		list<Denizen*>::iterator it1 = populace.begin();
 		list<Denizen*> Cpopulace;
 		Cpopulace = populace;
 		int j = 0;
-		list<Denizen*>::iterator iter;
-		//iter = std::max_element(Cpopulace.begin(), Cpopulace.end());
-			//Cpopulace.sort(Cpopulace.begin(), Cpopulace.end());
-		list<Denizen*>::iterator iter = Cpopulace.begin();
-		while (iter != Cpopulace.end()) {
-			Denizen* max;
-			max->setBiteChance(0);
-			for (int i = 0; i < Cpopulace.size(); i++) {
-				Denizen* D = *iter;
-				if (D->getBiteChance() > max->getBiteChance()) {
-
+		while (j < Qsize) {
+			list<Denizen*>::iterator iter = Cpopulace.begin();
+				
+				Denizen* max = Cpopulace.front();
+				Denizen* D;
+				for (int i = 0; i < Cpopulace.size(); i++) {
+					while (iter != Cpopulace.end()) {
+						D = *iter;
+						if (D->getBiteChance() > max->getBiteChance()) {
+							max = D;
+							cout << "Max: " << max->getBiteChance() << endl;
+							Cpopulace.splice(Cpopulace.begin(), Cpopulace, iter);
+						}
+						else {
+							++iter;
+						}
+					}
 				}
-			}
+				biteAttempt.push(max);
+				Cpopulace.pop_front();
+				j++;
 		}
-			while (iter != Cpopulace.end() && j < Qsize) {
+		//}
+			/*while (iter != Cpopulace.end() && j < Qsize) {
 				Denizen* D = *iter;
 				biteAttempt.push(D);
 				list<Denizen*>::iterator iter8 = iter;
 				j++;
 				iter = Cpopulace.erase(iter);
-			} 
+			} */
 		//}
 		cout << "Queue created. Copy of populace: " << Cpopulace.size() << "\tPopulace : " << populace.size() << "\tQueue : " << biteAttempt.size() << endl;
 		while (!biteAttempt.empty()) {

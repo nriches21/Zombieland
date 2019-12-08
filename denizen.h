@@ -19,7 +19,7 @@ public:
 	Denizen(string name) : name(name) { turnOver = false; } 
 	string getName() { return name; }
 	string getStatus() { return status; }
-	const int getBiteChance() { return biteChance; }
+	int getBiteChance() { return biteChance; }
 	virtual void speak() = 0;
 
 	Denizen* operator < (Denizen* const& i2) {
