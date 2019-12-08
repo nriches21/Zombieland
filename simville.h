@@ -90,7 +90,8 @@ public:
 				cout << setfill('.') << std::setw(80) << " " << setfill(' ') << endl << endl << endl;
 			}
 			dist->printPop(verbose);
-			dist->createQueue(5);
+			//dist->fillQueue(5);
+			dist->bite();
 			it++;
 					
 		}

@@ -110,7 +110,7 @@ int main (){
 				simville.showTotal();
 				std::cout << std::endl;
 
-				simville.createZombie(&uni, 1); //Testing
+				simville.createZombie(&uni, 2); //Testing
 				simville.createAlarmed (&uni, 1);
 
 			}
