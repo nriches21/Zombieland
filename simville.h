@@ -42,11 +42,9 @@ public:
 			hourTick();
 		}
 		else if (hourT == 24) {
-			//std::cout << std::setw(34) << "DAY " << dayT << ", " << hourT << ":00" << endl;
 			hourT = 0;
 		}
 		else {
-			//std::cout << std::setw(34) << "DAY " << dayT << ", " << hourT << ":00" << endl;
 			hourT = (hourT + 6);
 		}
 	}
@@ -54,14 +52,13 @@ public:
 	string hourShow() {
 		string hours;
 		if (hourT == 0) {
-			//std::cout << std::setw(34) << "DAY " << dayT << ", 24:00" << endl;
 			hours = "DAY " + std::to_string(dayT) + ", 24:00";
 			return hours;
 		}
 		else {
 			hours = "DAY " + std::to_string(dayT) + ", " + std::to_string(hourT - 6) + ":00";
 			return hours;
-		}//std::cout << std::setw(34) << "DAY " << dayT << ", " << hourT - 6 << ":00" << endl;
+		}
 	}
 
 	void addDist(District* d) { districts.push_back(d); }
@@ -93,7 +90,7 @@ public:
 				cout << setfill('.') << std::setw(80) << " " << setfill(' ') << endl << endl << endl;
 			}
 			dist->printPop(verbose);
-			//dist->createQueue(5);
+			dist->createQueue(5);
 			it++;
 					
 		}

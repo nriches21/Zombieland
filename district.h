@@ -106,28 +106,47 @@ public:
 		}
 	}*/
 
+	bool biteComp(Denizen* a, Denizen* b) {
+		return (a->getBiteChance() < b->getBiteChance());
+	}
+
 	//Create biteAttempt cue for bite() to use- find Qsize number of minimum values to push to queue
-	/*void createQueue(int Qsize) {
+	void createQueue(int Qsize) {
 		queue<Denizen*> biteAttempt;
 		list<Denizen*>::iterator it1 = populace.begin();
 		list<Denizen*> Cpopulace;
 		Cpopulace = populace;
-		//std::copy(populace.begin(), populace.end(), Cpopulace.begin());
-		for (int i = 0; i < Qsize; i++) {
-			list<Denizen*>::iterator iter = std::min_element(Cpopulace.begin(), Cpopulace.end());
-			while (iter != Cpopulace.end()) {
+		int j = 0;
+		list<Denizen*>::iterator iter;
+		//iter = std::max_element(Cpopulace.begin(), Cpopulace.end());
+			//Cpopulace.sort(Cpopulace.begin(), Cpopulace.end());
+		list<Denizen*>::iterator iter = Cpopulace.begin();
+		while (iter != Cpopulace.end()) {
+			Denizen* max;
+			max->setBiteChance(0);
+			for (int i = 0; i < Cpopulace.size(); i++) {
+				Denizen* D = *iter;
+				if (D->getBiteChance() > max->getBiteChance()) {
+
+				}
+			}
+		}
+			while (iter != Cpopulace.end() && j < Qsize) {
 				Denizen* D = *iter;
 				biteAttempt.push(D);
 				list<Denizen*>::iterator iter8 = iter;
-				iter++;
-				Cpopulace.erase(iter);
+				j++;
+				iter = Cpopulace.erase(iter);
 			} 
-			
-			cout << "Stuff.";
-		}*/
-		//cout << "Queue created. Copy of populace: " << Cpopulace.size() << "Populace : " << populace.size() << "Queue : " << biteAttempt.size() << endl;
+		//}
+		cout << "Queue created. Copy of populace: " << Cpopulace.size() << "\tPopulace : " << populace.size() << "\tQueue : " << biteAttempt.size() << endl;
+		while (!biteAttempt.empty()) {
+			cout << biteAttempt.front()->getBiteChance() << ", ";
+			biteAttempt.pop();
+		}
+		cout << endl;
 
-	//}
+	}
 
 	//bite()	
 	/**
