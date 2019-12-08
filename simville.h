@@ -230,9 +230,9 @@ public:
 					h = "Uptown";
 					break; }
 				}
-				int biteChance = ran() % 100 + 20;
+				int biteChance = ran() % 80 + 20;
 				Denizen* d = new Ignorant(newname, w, h);
-				d->setBiteChance(biteChance);
+				d->setBiteChance(biteChance + dist->getDensity());
 				dist->addDenizen(d);
 				namecount++;
 			}

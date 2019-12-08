@@ -44,11 +44,12 @@ public:
 	list<Denizen*>* getPopulace() { return &populace; }
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
 	void removeDenizen(Denizen* de) { populace.remove(de); }
-
+	int getDensity() { return density; }
 	void addConnection(char direction, District* location) { connections.insert({ direction, location }); }
 
 	//From Nora branch
-	void setBiteChance(Denizen* inputDenizen) {
+	// Already in Denizen and initialized in Simville 
+	/*void setBiteChance(Denizen* inputDenizen) {
 		if (inputDenizen->getStatus() == "Alarmed") {
 			inputDenizen->setBiteChance(25 + density);
 			//inputDenizen->biteChance = 25 + density; //set the bite chance to be 25 (base chance for alarmed) and add the density of the district (some number between 0 and 50)
@@ -56,57 +57,6 @@ public:
 		if (inputDenizen->getStatus() == "Ignorant") {
 			inputDenizen->setBiteChance(45 + density);
 			//inputDenizen->biteChance = 45 + density; //set the bite chance to be 45 (base chance for ignorant) and add the density of the district (some number between 0 and 50)
-		}
-	}
-
-	//deleted compare() from Nora branch
-
-	//bool sortBiteChance(Denizen& A, Denizen& B) {
-	//	return (A.getBiteChance() < B.getBiteChance());
-	//}
-
-	/*bool sortBiteChance() {
-		list<Denizen*>::iterator it1 = populace.begin(); //first
-		list<Denizen*>::iterator it2 = populace.end();
-		int middle = populace.size() / 2;
-		list<Denizen*>::iterator it3 = it1; //middle
-		advance(it2, middle); //middle
-	
-		while (it1 != populace.end() && it2 != populace.end()) {
-			Denizen* Dit1 = *it1;
-			Denizen* Dit2 = *it2;
-			Denizen* Dit3 = *it3;
-			
-			if (Dit1->getBiteChance() < Dit3->getBiteChance()) {
-				//cout << "Dit1: " << Dit1->getBiteChance() <<" < Dit2: " << Dit2->getBiteChance() << endl;
-				//return true;
-
-				//Call partition
-			}
-			//else if (Dit1->getBiteChance() == Dit2->getBiteChance()){
-			//}
-			else {
-				cout << "Dit1: " << Dit1->getBiteChance() << " > Dit2: " << Dit2->getBiteChance() << endl;
-				return false;
-			}
-			it1++;
-			it2++;
-		}
-
-	}*/
-
-	//bool biteChanceFirst(Denizen* a, Denizen* b) { return a->getBiteChance() < b->getBiteChance(); }
-
-	/*void sortPopulace() { //From Nora branch
-		list<Denizen*>::iterator it1 = populace.begin();
-		list<Denizen*>::iterator it2 = populace.begin();
-		it2++;
-		while (it1 != populace.end() && it2 != populace.end()) {
-			Denizen* Dit1 = *it1;
-			Denizen* Dit2 = *it2;
-			populace.sort(sortBiteChance); //automatically sorts in descending order(using the operator < overload int eh denizen class)
-			it1++;
-			it2++;
 		}
 	}*/
 
@@ -142,7 +92,6 @@ public:
 		}
 	}
 
-	//bite()	
 	/**
 	* Each district checks to see if there are zombies, if yes- 
 	* then creates a queue of citazens based on bite chance that is the 
@@ -152,37 +101,6 @@ public:
 	* Another person is pushed into the queue if that person in the queue moves to another district
 	* Map or list of denizens sorted by bite chance 
 	**/
-
-	/*void bite() { //Alyssa's version of Nora's bite() function, neither of which currently works 
-
-		queue<Denizen*> biteAttempt;
-		
-		if (zombies > 0) {
-			sortPopulace();
-			int zNumber = 0;
-			//Add to the queue as many denizens as there are zombies
-			while (zNumber <= zombies) { 
-				std::list<Denizen*>::iterator it = populace.begin();
-				while (it != populace.end()) {
-					Denizen* Dpointer = *it;
-					if (Dpointer->getStatus() == "Zombie") {
-						//it++;
-						break;	// First element of sorted populace is zombie, nothing to bite- 
-								// Don't need to iterate through list, since zombies have the lowest biteChance
-					}
-					else {
-						biteAttempt.push(Dpointer);
-						it++;
-						zNumber++; //One more zombie has been added to the queue
-					}
-				}
-			} 
-			/*for (int i = 0; i < zombies; i++) {
-
-			}*/
-		/*}
-		else { return; }
-	}*/
 
 	void bite() { //From Nora's branch
 
@@ -209,7 +127,6 @@ public:
 			while (del != populace.end() && biteAttempt.size() != 0) {
 				int prob = 1 + rand() % 10;
 				if (prob <= 7) { //bite successful
-					//cout << "biteAttempt size: " << biteAttempt.size() << endl;
 					Denizen* d = *del;
 					if (d == biteAttempt.front()) {
 						populace.push_back(new Zombie(d->getName()));
