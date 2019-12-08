@@ -83,7 +83,6 @@ public:
 			}
 			else { 			
 				cout << endl << setw(35) << dist->getName() << " District" << endl;
-			
 				SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
 				cout << std::setw(42) << hourShow() << endl;
 				SetConsoleTextAttribute(hConsole, 7); //Sets text back to white
@@ -93,7 +92,6 @@ public:
 			//dist->fillQueue(5);
 			dist->bite();
 			it++;
-					
 		}
 	}
 

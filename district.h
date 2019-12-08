@@ -187,89 +187,59 @@ public:
 	void bite() { //From Nora's branch
 
 		if (zombies != 0) {
-			//queue<Denizen*> biteAttempt; //queue of denizens that are going to be attempted to be bitten by zombies based on bite chance
-			//sortPopulace(); //sort populace in descending order by bite chance
-			/*std::list<Denizen*>::iterator it = populace.begin(); //iterator pointing to the beginning of the list
-			for (int i = zombies; i != 0; i--) { //for loop that runs for the number of zombiest there are
-				while (it != populace.end()) { //as long as we are not at the end of the populace, keep iterating
-					Denizen* Dpointer = *it;
-					if (Dpointer->getStatus() != "Zombie") { //check if we are at zombies
 
-						biteAttempt.push(*it); //if it is not a zombie, push the denizen into the queue to be attempted to be bitten
-					}
-					it++; //increment the iterater
-				}
-			}*/
-
-			cout << "bite() started. " << endl;
 			fillQueue(zombies); //Get as many Denizens to bite as there are zombies
-			cout << "fillQueue has been called. " << endl;
-			cout << "Populace size is: " << populace.size() << endl;
-			//for (int i = zombies; (i != 0) && (!biteAttempt.empty()); i--) { //iterate through for the number of zombies as long as there are people in the queue
-				cout << zombies << endl;
-				int i = 1;
-				int loops = 0;
-				std::list<Denizen*>::iterator zom = populace.begin(); //iterator to the end of the list (should point to the zombies)
-				while (zom != populace.end() && i != zombies) {
-					Denizen* z = *zom;
-					cout << "Right after while() loop. " << endl;
+			int i = 0;
+			std::list<Denizen*>::iterator zom = populace.begin(); //iterator to the end of the list (should point to the zombies)
+			while (zom != populace.end()) {
+				Denizen* z = *zom;
+				if (z->getStatus() == "Zombie") { //go through the list for the number of zombies
+					z->setTurnOver(true); //simulate that a zombie attempted to bite and used their turn this time tick
+					i++;
+				}
+				if (i == zombies) { break; }
+				zom++;
+			}
 
-					if (z->getStatus() == "Zombie") { //go through the list for the number of zombies
-						cout << "About to decrement zom. " << endl;
-						//zom++; //decrement the iterator
-						z->setTurnOver(true); //simulate that a zombie attempted to bite and used their turn this time tick
-						//z = *zom;
-						cout << "Zombie found. " << endl;
-						i++;
-						if (i == zombies) { break; }
-						cout << "i = " << i << endl;
+			srand(time(0));
+
+			std::list<Denizen*>::iterator del = populace.begin();
+			while (del != populace.end() && biteAttempt.size() != 0) {
+				int prob = 1 + rand() % 10;
+				if (prob <= 7) { //bite successful
+					Denizen* d = *del;
+					if (d == biteAttempt.front()) {
+						populace.push_back(new Zombie(d->getName()));
+						del = populace.erase(del); //delete the person at that iterator
+						populace.back()->setTurnOver(true); //set the new Zombies turnOver to be true
+						cout << d->getName() << " has been bitten." << endl;
+						biteAttempt.pop(); //delete the person from the queue
 					}
-					
-					loops += 1;
-					cout << "Zom increments. Loop is " << loops << endl;
-					zom++;
+					++del;
 				}
 				
-
-				srand(time(0));
-
-				int prob = 1 + rand() % 10;
-				if (prob <= 8) { //bite successful
-					std::list<Denizen*>::iterator del = populace.begin();
-					Denizen* d = *del;
-					while (d != biteAttempt.front()) { //until we have found the correct person in the list, continue incrementing the iterator
+				else { //bite unsuccessful
+						
+					if (biteAttempt.front()->getStatus() == "Ignorant") {
+						Denizen* i = *del;
+						if (i == biteAttempt.front()) {
+							int chance = i->getBiteChance() - 20;
+							populace.push_back(new Alarmed(i->getName(), chance)); //create a new alarmed and push it to the list
+							del = populace.erase(del); //delete ignorant
+							populace.back()->setTurnOver(true); //set turnover
+							cout << i->getName() << " avoided being bitten and is now alarmed." << endl;
+							biteAttempt.pop(); //delete the person from teh queue
+						}
 						del++;
 					}
-					//populace.end() = new Zombie(d->getName()); //create a new zombie and push it to the end of the list
-					populace.push_back(new Zombie(d->getName()));
-					populace.erase(del); //delete the person at that iterator
-					populace.back()->setTurnOver(true); //set the new Zombies turnOver to be true
-					cout << d->getName() << " has been bitten." << endl;
-					biteAttempt.pop(); //delete the person from the queue
-				}
-				else { //bite unsuccessful
-					if (biteAttempt.front()->getStatus() == "Ignorant") {
-						std::list<Denizen*>::iterator ig = populace.begin();
-						Denizen* i = *ig;
-						while (i != biteAttempt.front()) {
-							ig++;
-						}
-						int chance = i->getBiteChance() - 20;
-						populace.push_back(new Alarmed(i->getName(), chance)); //create a new alarmed and push it to the list
-						populace.erase(ig); //delete ignorant
-						populace.back()->setTurnOver(true); //set turnover
-						cout << i->getName() << " avoided being bitten and is now alarmed." << endl;
-						biteAttempt.pop(); //delete the person from teh queue
-					}
-					if (biteAttempt.front()->getStatus() == "Alarmed") {
+					
+					else if (biteAttempt.front()->getStatus() == "Alarmed") {
 						cout << biteAttempt.front()->getName() << " avoided being bitten and is already alarmed." << endl;
-						biteAttempt.front()->setTurnOver(true); //set the turn over to be true for the alarmed person 
+						biteAttempt.front()->setTurnOver(true); //set the turn over to be true for the alarmed person
+						biteAttempt.pop();
 					}
 				}
-		//	}
-		}
-		else {
-			//return;
+			}
 		}
 		
 	}

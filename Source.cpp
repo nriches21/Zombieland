@@ -61,7 +61,8 @@ int main (){
 	uni.addDenizen(&s2);//Testing
 	s1.setBiteChance(50); //Testing
 	s2.setBiteChance(100); //Testing
-
+	simville.createZombie(&uni, 1); //Testing
+	//simville.createAlarmed (&uni, 1);
 	simville.populateDistrict();
 
 #pragma endregion
@@ -109,10 +110,6 @@ int main (){
 				// Displays total population in all of Simville
 				simville.showTotal();
 				std::cout << std::endl;
-
-				simville.createZombie(&uni, 2); //Testing
-				simville.createAlarmed (&uni, 1);
-
 			}
 
 			std::cout << std::endl << "Play simulation again? [Y/N] ";
