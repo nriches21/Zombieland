@@ -8,34 +8,32 @@ using std::cout;
 using std::endl;
 using std::string;
 
-
 class Denizen {
 protected:
 	string name;
-	string status; //ignorant / alarmed / zombie
+	string status;
 	bool turnOver; //Already did an action this turn- if bit this turn, cannot also move and vice versa. Has to be reset after every time tick
-	float biteChance; //probability of being bitten
+	int biteChance;
 
 public:
-	//constructor for denizen that just initializes name
-	Denizen(string name) : name(name) { turnOver = false; }
-
-	//getters for the variables
+	Denizen(string name) : name(name) { turnOver = false; } 
 	string getName() { return name; }
 	string getStatus() { return status; }
-	float getBiteChance() { return biteChance; }
-
-	//testing method
+	int getBiteChance() { return biteChance; }
 	virtual void speak() = 0;
 
-	//overload of the < 
-	Denizen operator < (Denizen const& i1, Denizen const& i2) {
-		if (i1.getBiteChance() <= i2.getBiteChance()) {
-			return i1;
+	Denizen* operator < (Denizen* const& i2) {
+		if (this->getBiteChance() <= i2->getBiteChance()) {
+			return this;
 		}
 		else {
 			return i2;
 		}
+	}
+
+	//getter for turnOver
+	bool getTurnOver(){
+		return turnOver;
 	}
 
 	//setter for turnOver
@@ -43,8 +41,10 @@ public:
 		turnOver = inputBool;
 	}
 
+	void setBiteChance(int i) {
+		biteChance = i;
+	}
 };
-
 
 class Zombie : public Denizen {
 public:
@@ -57,11 +57,9 @@ public:
 
 class Alarmed : public Denizen {
 public:
-	Alarmed(string name) : Denizen(name) { status = "Alarmed"; }
-
-	//test method
+	Alarmed(string name, int chance) : Denizen(name) { status = "Alarmed"; biteChance = chance; }
 	void speak() { cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAA!!!" << endl; }
-	//convert to ignorant to alarmed
+	//convert an ignorant to alarmed
 };
 
 class Ignorant : public Denizen {
@@ -70,8 +68,8 @@ private:
 	string homeDistrict;
 public:
 	Ignorant(string name, string inputWork, string inputHome) : Denizen(name) { status = "Ignorant"; workDistrict = inputWork; homeDistrict = inputHome; }
-
-	//test method
+	string getWork() {return workDistrict;}
+	string getHome() {return homeDistrict;}
 	void speak() { cout << "My word- what a fine, normal day in Simville!" << endl; }
 };
 
