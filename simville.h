@@ -12,12 +12,12 @@
 #include <fstream>
 #include <iterator>
 #include <windows.h>
+#include <map>
 
 #undef max
 
 #include "denizen.h"
 #include "district.h"
-
 using namespace std;
 
 class Simville {
@@ -90,8 +90,9 @@ public:
 			}
 			dist->printPop(verbose);
 			//dist->fillQueue(5);
-			dist->alarm();
-			dist->bite();
+			//dist->alarm();
+			//dist->bite();
+			move(dist);
 
 			it++;
 		}
@@ -145,7 +146,7 @@ public:
 		double leftover;
 		int minimum;
 		//int total = 2000;
-		int total = 50; //For testing, delete later
+		int total = 150; //For testing, delete later
 
 		random_device ran;
 
@@ -299,6 +300,82 @@ public:
 				cout << std::endl << "---------------------- " << D->getName() << " Can't be alarmed!!! -------------------------- " << std::endl;
 				// If a denizen tries to alarm a zombie, they should get bitten.  
 			}
+		}
+	}
+
+	/** //move()
+	* Iterate through the entire list of denizens, check if denizen already made an action (turnOver bool)
+	* If not, then check if ignorant; if ignorant, check time tick, and if they move this tick, then move to home or work.
+	* Simville has a map of denizens and districts. move() takes a pointer to Simville's map and modifies denizen locations.
+	* map<denizen*, district name string>some_map
+	* After move, delete denizen from this list and push new pair to simville's map.
+	* Zombie and Alarmed move- move into any connected district at random. Delete from list and push new pair to map.
+	* District has to update list based on Simville's map each time tick.
+	**/
+	void move(District* inputDistrict) {
+		list<Denizen*>* pop = inputDistrict->getPopulace();
+		std::list<Denizen*>::iterator mov = pop->begin(); //iterator to the beginning of the populace list
+		while (mov != pop->end()) {
+			Denizen* current = *mov;
+			if (current->getTurnOver() == false) {
+				if (current->getStatus() == "Ignorant") {
+					cout << current->getName() <<  " Ignorant is moving" << endl;
+					string h = dynamic_cast<Ignorant*>(current)->getHome();
+					string w = dynamic_cast<Ignorant*>(current)->getWork();
+					if (hourT == 6) { //if it's 6 in the morning, go to work
+						std::list<District*>::iterator dist = districts.begin();
+						District* distr = *dist;
+						while (distr->getName() != w) {
+							distr++;
+						}
+						distr->addDenizen(current);//push the same person to the district where they work
+						inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
+						cout << current->getName() << " moved." << endl;
+					}
+					else if (hourT == 18) { //if it's 6 at night, go home
+						std::list<District*>::iterator dist = districts.begin();
+						District* distr = *dist;
+						while (distr->getName() != h) {
+							distr++;
+						}
+						distr->addDenizen(current);//push the same person to the district where they live
+						inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
+						cout << current->getName() << " moved." << endl;
+					}
+				}
+				else {
+					map<char, District*>* connect = inputDistrict->getConnections(); //see the districts you are connected to 
+					map<char, District*> connect2 = *inputDistrict->getConnections(); //see the districts you are connected to 
+					District* moveTo = NULL;
+					random_device rand;
+					int randDirection = rand() % 4;
+					switch (randDirection) {
+					case 0:
+						moveTo = connect2['n']; //move north is random is 0
+						break;
+					case 1:
+						moveTo = connect2['e']; //move east if random is 1
+						break;
+					case 2:
+						moveTo = connect2['s']; //move south if random is 2
+						break;
+					case 3:
+						moveTo = connect2['w']; //move west if random is 3
+					}
+					std::list<District*>::iterator dist = districts.begin();
+					District* distr = *dist;
+
+					while (distr->getName() != moveTo->getName()) {
+						distr++;
+					}
+					
+					distr->addDenizen(current);
+					inputDistrict->removeDenizen(current); //delete them from the current list (the district they are right now)
+				}
+				
+			}
+			cout << "Iterator mov++" << endl;
+			mov++;
 		}
 	}
 

@@ -42,27 +42,14 @@ public:
 	int alarmedTotal() { return alarmed; }
 	int ignorantTotal() { return ignorant; }
 	list<Denizen*>* getPopulace() { return &populace; }
+	map<char, District*>* getConnections() { return &connections; }
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
 	void removeDenizen(Denizen* de) { populace.remove(de); }
 	int getDensity() { return density; }
 	void addConnection(char direction, District* location) { connections.insert({ direction, location }); }
 
-	//From Nora branch
-	// Already in Denizen and initialized in Simville 
-	/*void setBiteChance(Denizen* inputDenizen) {
-		if (inputDenizen->getStatus() == "Alarmed") {
-			inputDenizen->setBiteChance(25 + density);
-			//inputDenizen->biteChance = 25 + density; //set the bite chance to be 25 (base chance for alarmed) and add the density of the district (some number between 0 and 50)
-		}
-		if (inputDenizen->getStatus() == "Ignorant") {
-			inputDenizen->setBiteChance(45 + density);
-			//inputDenizen->biteChance = 45 + density; //set the bite chance to be 45 (base chance for ignorant) and add the density of the district (some number between 0 and 50)
-		}
-	}*/
-
 	//Fill biteAttempt cue for bite() to use- find Qsize number of Denizens to push to queue
 	void fillQueue(int Qsize) {
-		//queue<Denizen*> biteAttempt;
 		while (!biteAttempt.empty()) {
 			biteAttempt.pop();
 		}
