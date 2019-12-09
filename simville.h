@@ -90,7 +90,9 @@ public:
 			}
 			dist->printPop(verbose);
 			//dist->fillQueue(5);
+			dist->alarm();
 			dist->bite();
+
 			it++;
 		}
 	}

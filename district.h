@@ -170,6 +170,49 @@ public:
 		
 	}
 
+	void alarm() { //From Nora's branch
+		if (alarmed != 0) {
+			int numA = alarmed;
+			int i = 0;
+			std::list<Denizen*>::iterator alrm = populace.begin(); //iterator to the end of the list (should point to the zombies)
+			while (alrm != populace.end()) {
+				Denizen* a = *alrm;
+				if (a->getStatus() == "Alarmed") { //go through the list for the number of zombies
+					a->setTurnOver(true); //simulate that a zombie attempted to bite and used their turn this time tick
+					i++;
+				}
+				if (i == alarmed) { break; }
+				alrm++;
+			}
+
+			srand(time(0));
+			std::list<Denizen*>::iterator del = populace.begin();
+			int randDenizen = rand() % populace.size();
+			advance(del, randDenizen);
+			while (del != populace.end() && numA != 0) {
+				Denizen* d = *del;
+					if (d->getStatus() == "Ignorant") {
+						int prob = 1 + rand() % 10;
+						if (prob <= 7) { //alarm successful
+							
+								int chance = d->getBiteChance() - 20;
+								populace.push_back(new Alarmed(d->getName(), chance));
+								del = populace.erase(del); //delete the person at that iterator
+								populace.back()->setTurnOver(true); //set the new Alarmed turnOver to be true
+								cout << d->getName() << " has been alarmed." << endl;
+								//biteAttempt.pop(); //delete the person from the queue
+								numA--;
+								cout << "NumA: " << numA << endl;
+							
+							
+						}
+						
+					}
+					++del;
+				}
+		}
+	}
+
 	/*
 	* Prints population of zombies, alarmed and ignorant denizens in this district.
 	* Also prints the name of each denizen.
