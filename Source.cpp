@@ -108,19 +108,19 @@ int main (){
 		soh.addConnection('s', &uni);
 		soh.addConnection('w', &dow);
 
-		Ignorant s1("Person", "Downtown", "The University");//Testing
+		/*Ignorant s1("Person", "Downtown", "The University");//Testing
 		Ignorant s2("Human", "Downtown", "The University");//Testing
 		s1.setBiteChance(150);
 		s2.setBiteChance(150);
 		uni.addDenizen(&s1);//Testing
 		uni.addDenizen(&s2);//Testing
 		s1.setBiteChance(50); //Testing
-		s2.setBiteChance(100); //Testing
+		s2.setBiteChance(100); //Testing*/
 
 		simville.populateDistrict();
 
-		//simville.createAlarmed (&uni, 1); //Testing
-		//simville.createZombie(&uni, 1); //Testing
+		simville.createAlarmed (&uni, 1); //Testing
+		simville.createZombie(&uni, 1); //Testing
 
         #pragma endregion
 

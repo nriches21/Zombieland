@@ -89,7 +89,6 @@ public:
 				cout << setfill('.') << std::setw(80) << " " << setfill(' ') << endl << endl << endl;
 			}
 			dist->printPop(verbose);
-			//dist->fillQueue(5);
 			//dist->alarm();
 			//dist->bite();
 			move(dist);
@@ -368,19 +367,30 @@ public:
 					if (current->getStatus() == "Alarmed") {
 						Denizen* newd = new Alarmed(current->getName(), biteChance);
 						newd->setTurnOver(true);
+						moveTo->addDenizen(current);
+						mov = pop->erase(mov);
 					}
 					else {
 						Denizen* newd = new Zombie(current->getName());
 						newd->setTurnOver(true);
+						moveTo->addDenizen(current);
+						mov = pop->erase(mov);
 					}
-					moveTo->addDenizen(current);
-					mov = pop->erase(mov);
+					//moveTo->addDenizen(current);
+					//mov = pop->erase(mov);
 				}
 			}
 			mov++;
 		} 
 	} 
 
+	void resetTurn(District* dist) {
+		list<Denizen*>* pop = dist->getPopulace();
+		std::list<Denizen*>::iterator del = pop->begin();
+
+		Denizen* d;
+		d->setTurnOver(false);
+	}
 
 	/** //move()
 	* Iterate through the entire list of denizens, check if denizen already made an action (turnOver bool)
