@@ -30,8 +30,6 @@ int main (){
 	HANDLE hConsole; 
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-
-
 	string playAsk;
 	bool playSim = true;
 
@@ -79,49 +77,80 @@ int main (){
 		simville.addDist(&med);
 		simville.addDist(&doc);
 
-		//Ignorant p1("Person one");//Testing
-		//Ignorant p2("Person two");//Testing
-		//uni.addDenizen(&p1);//Testing
-		//uni.addDenizen(&p2);//Testing
+		//everything has a north south east west, if there is nothing in that direction the map holds a pointer to itself
+		med.addConnection('n', &upt);
+		med.addConnection('e', &dow);
+		med.addConnection('s', &doc);
+		med.addConnection('w', &med); //there is nothing west, so if they want to move west they just stay in the same place
 
-		Ignorant s1("Sort one", "Downtown", "The University");//Testing
-		Ignorant s2("Sort two", "Downtown", "The University");//Testing
-		s1.setBiteChance(30);
-		s2.setBiteChance(80);
+		doc.addConnection('n', &med);
+		doc.addConnection('e', &dow);
+		doc.addConnection('s', &doc);
+		doc.addConnection('w', &doc);
+
+		upt.addConnection('n', &uni);
+		upt.addConnection('e', &soh);
+		upt.addConnection('s', &dow);
+		upt.addConnection('w', &med);
+
+		dow.addConnection('n', &upt);
+		dow.addConnection('e', &soh);
+		dow.addConnection('s', &doc);
+		dow.addConnection('w', &med);
+
+		uni.addConnection('n', &uni);
+		uni.addConnection('e', &upt);
+		uni.addConnection('s', &uni);
+		uni.addConnection('w', &uni);
+
+		soh.addConnection('n', &upt);
+		soh.addConnection('e', &soh);
+		soh.addConnection('s', &uni);
+		soh.addConnection('w', &dow);
+
+		Ignorant s1("Person", "Downtown", "The University");//Testing
+		Ignorant s2("Human", "Downtown", "The University");//Testing
+		s1.setBiteChance(150);
+		s2.setBiteChance(150);
 		uni.addDenizen(&s1);//Testing
 		uni.addDenizen(&s2);//Testing
 		s1.setBiteChance(50); //Testing
 		s2.setBiteChance(100); //Testing
-		simville.createZombie(&uni, 1); //Testing
-		//simville.createAlarmed (&uni, 1);
+
 		simville.populateDistrict();
+
+		//simville.createAlarmed (&uni, 1); //Testing
+		//simville.createZombie(&uni, 1); //Testing
 
         #pragma endregion
 
-		// Main simulation loop
-			for (int i = 0; i < Days; i++) {
 
-				// Displays day and time 
-				SetConsoleTextAttribute(hConsole, 2); //text green
-				simville.hourTick();
-				SetConsoleTextAttribute(hConsole, 7); //text back white
+		#pragma region mainLoop
 
-				// If true, displays population details per district
-				simville.districtPopulation(verbose);
+		for (int i = 0; i < Days; i++) {
 
-				// Displays total population in all of Simville
-				simville.showTotal();
-				std::cout << std::endl;
-			}
+			// Displays day and time 
+			SetConsoleTextAttribute(hConsole, 2); //text green
+			simville.hourTick();
+			SetConsoleTextAttribute(hConsole, 7); //text back white
 
-			std::cout << std::endl << "Play simulation again? [Y/N] ";
-			std::cin >> playAsk;
-			if (playAsk != "Y" && playAsk != "y") {
+			// If true, displays population details per district
+			simville.districtPopulation(verbose);
+
+			// Displays total population in all of Simville
+			simville.showTotal();
+			std::cout << std::endl;
+		}
+
+		std::cout << std::endl << "Play simulation again? [Y/N] ";
+		std::cin >> playAsk;
+		if (playAsk != "Y" && playAsk != "y") {
 			playSim = false;
-			} //Need to reset variables from simville and districts, or it'll just continue and the zombies will carry over from last time
+		}
 
 	} while (playSim == true);
-	
+			
+	#pragma endregion
 
 	return 0;
 }

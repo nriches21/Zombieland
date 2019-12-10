@@ -37,14 +37,17 @@ private:
 public:
 	District(string name) : name(name), zombies(0), alarmed(0), ignorant(0), density(0) {}
 
-	string getName() const{ return name; }
+	string getName() { return name; }
 	int zombieTotal() { return zombies; }
 	int alarmedTotal() { return alarmed; }
 	int ignorantTotal() { return ignorant; }
 	list<Denizen*>* getPopulace() { return &populace; }
 	map<char, District*>* getConnections() { return &connections; }
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
-	void removeDenizen(Denizen* de) { populace.remove(de); }
+	//void addIgnorant(Denizen* de, string h, string w) { populace.push_back(new Ignorant(de->getName(), h, w)); }
+	void removeDenizen(Denizen* de) {
+		cout << "Removing Denizen " << de->getName() << endl;
+		populace.remove(de); }
 	int getDensity() { return density; }
 	void addConnection(char direction, District* location) { connections.insert({ direction, location }); }
 

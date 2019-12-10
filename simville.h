@@ -146,7 +146,7 @@ public:
 		double leftover;
 		int minimum;
 		//int total = 2000;
-		int total = 150; //For testing, delete later
+		int total = 50; //For testing, delete later
 
 		random_device ran;
 
@@ -303,6 +303,46 @@ public:
 		}
 	}
 
+	void move(District* dist) {
+		list<Denizen*>* pop = dist->getPopulace();
+		std::list<Denizen*>::iterator mov = pop->begin();
+
+		while (mov != pop->end()) {
+			//cout << "do stuff" << endl;
+			Denizen* current = *mov;
+			//cout << current->getName() << endl;
+			if(current->getTurnOver() == false){
+				if (current->getStatus() == "Ignorant") {
+					string h = dynamic_cast<Ignorant*>(current)->getHome();
+					string w = dynamic_cast<Ignorant*>(current)->getWork();
+					if (hourT - 6 == 6) {
+						
+						std::list<District*>::iterator iterd = districts.begin();
+						while (iterd != districts.end()) {
+							District* d = *iterd;
+							string itname = d->getName();
+							if (w == itname) {
+								Denizen* newd = new Ignorant(current->getName(), h, w);
+								newd->setBiteChance(current->getBiteChance() + d->getDensity());
+								newd->setTurnOver(true);
+								d->addDenizen(newd);
+								//d->removeDenizen(current);
+								//d->addDenizen(current);
+								//cout << current->getName() << endl;
+								//cout << w << endl;
+
+							}
+							iterd++;
+						}
+							
+					}
+				}
+			}
+			mov++;
+		}
+	}
+
+
 	/** //move()
 	* Iterate through the entire list of denizens, check if denizen already made an action (turnOver bool)
 	* If not, then check if ignorant; if ignorant, check time tick, and if they move this tick, then move to home or work.
@@ -312,35 +352,53 @@ public:
 	* Zombie and Alarmed move- move into any connected district at random. Delete from list and push new pair to map.
 	* District has to update list based on Simville's map each time tick.
 	**/
-	void move(District* inputDistrict) {
+	/*void move(District* inputDistrict) {
 		list<Denizen*>* pop = inputDistrict->getPopulace();
 		std::list<Denizen*>::iterator mov = pop->begin(); //iterator to the beginning of the populace list
+		cout << "mov" << endl;
+		mov++;
+		Denizen* current;
+
 		while (mov != pop->end()) {
-			Denizen* current = *mov;
+			cout << "mov has either just been set or iterated." << endl;
+			current = *mov;
+			//mov++;
+
 			if (current->getTurnOver() == false) {
+
 				if (current->getStatus() == "Ignorant") {
-					cout << current->getName() <<  " Ignorant is moving" << endl;
 					string h = dynamic_cast<Ignorant*>(current)->getHome();
 					string w = dynamic_cast<Ignorant*>(current)->getWork();
-					if (hourT == 6) { //if it's 6 in the morning, go to work
+
+					if (hourT - 6 == 6) { //if it's 6 in the morning, go to work
+						cout << hourShow() << endl;
+						cout << current->getName() << " is going to work!" << endl;
 						std::list<District*>::iterator dist = districts.begin();
-						District* distr = *dist;
-						while (distr->getName() != w) {
-							distr++;
+						District* d;
+
+						while (dist != districts.end() && current->getTurnOver()!=true) {
+							d = *dist;
+							if (d->getName() == w) {
+								cout << current->getName() << " is about to move." << endl;
+								current->setTurnOver(true);
+								d->addDenizen(current);//push the same person to the district where they work
+								inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
+							}
+							cout << "dist++" << endl;
+							dist++;
 						}
-						distr->addDenizen(current);//push the same person to the district where they work
-						inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
-						cout << current->getName() << " moved." << endl;
 					}
-					else if (hourT == 18) { //if it's 6 at night, go home
+					else if (hourT - 6 == 18) { //if it's 6 at night, go home
 						std::list<District*>::iterator dist = districts.begin();
-						District* distr = *dist;
-						while (distr->getName() != h) {
-							distr++;
+						District* d = *dist;
+						while (dist != districts.end()) {
+							if (d->getName() == h) {
+								d->addDenizen(current);//push the same person to the district where they live
+								inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
+								cout << current->getName() << " moved." << endl;
+							}
+							dist++;
 						}
-						distr->addDenizen(current);//push the same person to the district where they live
-						inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
-						cout << current->getName() << " moved." << endl;
 					}
 				}
 				else {
@@ -372,12 +430,11 @@ public:
 					distr->addDenizen(current);
 					inputDistrict->removeDenizen(current); //delete them from the current list (the district they are right now)
 				}
-				
 			}
 			cout << "Iterator mov++" << endl;
 			mov++;
 		}
-	}
+	}*/
 
 };
 
