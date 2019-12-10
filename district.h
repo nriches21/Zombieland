@@ -27,7 +27,7 @@ class District {
 private:
 	string name;
 	list<Denizen*>populace;
-	map<char, District*>connections; //north/south/east/west char and connected district (ex., N, Downtown means go north to reach Downtown)
+	map<char, District*>connections; // n/s/e/w char and connected district pointer(ex: N, Downtown means go north to reach Downtown)
 	queue<Denizen*>biteAttempt;
 	int zombies;
 	int alarmed;
@@ -38,20 +38,22 @@ public:
 	District(string name) : name(name), zombies(0), alarmed(0), ignorant(0), density(0) {}
 
 	string getName() { return name; }
+
 	int zombieTotal() { return zombies; }
 	int alarmedTotal() { return alarmed; }
 	int ignorantTotal() { return ignorant; }
+
 	list<Denizen*>* getPopulace() { return &populace; }
+	
 	map<char, District*>* getConnections() { return &connections; }
+	
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
-	//void addIgnorant(Denizen* de, string h, string w) { populace.push_back(new Ignorant(de->getName(), h, w)); }
-	void removeDenizen(Denizen* de) {
-		cout << " Removing Denizen " << de->getName() << endl;
-		populace.remove(de); }
+	
 	int getDensity() { return density; }
+	
 	void addConnection(char direction, District* location) { connections.insert({ direction, location }); }
 
-	//Fill biteAttempt cue for bite() to use- find Qsize number of Denizens to push to queue
+	//Fill biteAttempt cue for bite() to use. Finds <Qsize> number of Denizens to push to queue
 	void fillQueue(int Qsize) {
 		while (!biteAttempt.empty()) {
 			biteAttempt.pop();
@@ -206,11 +208,6 @@ public:
 		}
 	}
 
-	/*
-	* Prints population of zombies, alarmed and ignorant denizens in this district.
-	* Also prints the name of each denizen.
-	*/
-
 	void countPop() {
 		zombies = 0;
 		alarmed = 0;
@@ -225,19 +222,25 @@ public:
 		}
 	}
 
+	/*
+	* Prints population of zombies, alarmed and ignorant denizens in this district.
+	* Also prints the name of each denizen.
+	*/
+
 	void printPop(bool verbose) {
+		HANDLE hConsole;
+		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		
 		zombies = 0;
 		alarmed = 0;
 		ignorant = 0;
 		int column = 0;
 
-		HANDLE hConsole;
-		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
 		list<Denizen*>::iterator it = populace.begin();
 		while (it != populace.end()) {
 
 			Denizen* pointr = *it;
+
 			if (verbose != false) {
 				if (column == 6) {
 					column = 0;
@@ -246,25 +249,27 @@ public:
 				column++;
 
 				if (pointr->getStatus() == "Zombie") {
-					SetConsoleTextAttribute(hConsole, 4); //Red Text
-					cout << std::setw(13) << pointr->getName();
-					SetConsoleTextAttribute(hConsole, 7); //Back to white Text
+					SetConsoleTextAttribute(hConsole, 4);	cout << std::setw(13) << pointr->getName();
+					SetConsoleTextAttribute(hConsole, 7);
 				}
 				else if (pointr->getStatus() == "Alarmed") {
-					SetConsoleTextAttribute(hConsole, 6); //Yellow Text
-					cout << std::setw(13) << pointr->getName();
-					SetConsoleTextAttribute(hConsole, 7); //Back to white Text
+					SetConsoleTextAttribute(hConsole, 6);	cout << std::setw(13) << pointr->getName();
+					SetConsoleTextAttribute(hConsole, 7); 
 				}
 				else {
 					cout << std::setw(13) << pointr->getName();
 				}
 
-				//cout << ": " << std::left << setw(4) << pointr->getBiteChance() << "  -  "; //Uncomment to see bite chance
+				//Uncomment to see bite chance, work and home districts per ignorant denizen
+				/*
+				cout << ": " << std::left << setw(4) << pointr->getBiteChance() << "  -  "; 
 				Ignorant* ig = dynamic_cast<Ignorant*>(pointr);
-				//if (ig) {
-				//	cout << "Home: " << setw(20) <<  ig->getHome() << "Work: " << setw(20) << ig->getWork(); //Uncomment to see work and home districts
-				//}
-				//cout << std::right << endl;
+				if (ig) { 
+					cout << "Home: " << setw(20) <<  ig->getHome();
+					cout << "Work: " << setw(20) << ig->getWork(); 
+					cout << std::right << endl;
+				}
+				*/
 			}
 
 			if (pointr->getStatus() == "Zombie") ++zombies;
@@ -275,18 +280,12 @@ public:
 
 		if (verbose != false) {
 			cout << endl << endl << std::setw(12) << "ZOMBIES: ";
-			SetConsoleTextAttribute(hConsole, 4);
-			cout << zombies;
-			SetConsoleTextAttribute(hConsole, 7);
-			cout << std::setw(19) << "ALARMED: ";
-			SetConsoleTextAttribute(hConsole, 6);
-			cout << alarmed;
-			SetConsoleTextAttribute(hConsole, 7);
-			cout << std::setw(18) << "IGNORANT: ";
-			SetConsoleTextAttribute(hConsole, 15);
-			cout << ignorant;
-			SetConsoleTextAttribute(hConsole, 7); 
-			cout << std::setw(16) << "TOTAL: " << zombies + alarmed + ignorant << endl;
+			SetConsoleTextAttribute(hConsole, 4);	cout << zombies;
+			SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(19) << "ALARMED: ";
+			SetConsoleTextAttribute(hConsole, 6);	cout << alarmed;
+			SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(18) << "IGNORANT: ";
+			SetConsoleTextAttribute(hConsole, 15);	cout << ignorant;
+			SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(16) << "TOTAL: " << zombies + alarmed + ignorant << endl;
 			cout << setfill('=') << std::setw(80) << " " << setfill(' ') << endl << endl;
 		}
 		else {

@@ -14,16 +14,29 @@
 #include <windows.h>
 #include <map>
 
-#undef max
-
 #include "denizen.h"
 #include "district.h"
-using namespace std;
+#undef max
+
+//using namespace std;
+using std::cout;
+using std::endl;
+using std::setw;
+using std::setfill;
+using std::list;
+using std::map;
+using std::queue;
+using std::random_device;
+using std::array;
+using std::to_string;
 
 class Simville {
 private:
 	int dayT;
 	int hourT;
+	int zSum;
+	int aSum;
+	int iSum;
 	std::list<District*>districts;
 
 public:
@@ -37,8 +50,8 @@ public:
 		if (hourT == 0) {
 			hourT = 6;
 			++dayT;
-			std::cout << endl << std::setw(17) << " " << setfill('=') << std::setw(19) << " DAY ";
-			std::cout << dayT << " " << std::setw(15) << " " << setfill(' ') << endl;
+			cout << endl << setw(17) << " " << setfill('=') << setw(19) << " DAY ";
+			cout << dayT << " " << setw(15) << " " << setfill(' ') << endl;
 			hourTick();
 		}
 		else if (hourT == 24) {
@@ -52,11 +65,11 @@ public:
 	string hourShow() {
 		string hours;
 		if (hourT == 0) {
-			hours = "DAY " + std::to_string(dayT) + ", 24:00";
+			hours = "DAY " + to_string(dayT) + ", 24:00";
 			return hours;
 		}
 		else {
-			hours = "DAY " + std::to_string(dayT) + ", " + std::to_string(hourT - 6) + ":00";
+			hours = "DAY " + to_string(dayT) + ", " + to_string(hourT - 6) + ":00";
 			return hours;
 		}
 	}
@@ -64,8 +77,7 @@ public:
 	void addDist(District* d) { districts.push_back(d); }
 
 	/*
-	* Prints district name and the time, then calls printPop(verbose) to print district-
-	* specific population. 
+	* Runs and prints simulation for each district. 
 	*/
 	void districtPopulation(bool verbose) {
 		HANDLE hConsole;
@@ -83,11 +95,11 @@ public:
 			}
 			else { 			
 				cout << endl << setw(35) << dist->getName() << " District" << endl;
-				SetConsoleTextAttribute(hConsole, 2); //Sets time text to green
-				cout << std::setw(42) << hourShow() << endl;
-				SetConsoleTextAttribute(hConsole, 7); //Sets text back to white
-				cout << setfill('.') << std::setw(80) << " " << setfill(' ') << endl << endl << endl;
+				SetConsoleTextAttribute(hConsole, 2);	cout << setw(42) << hourShow() << endl;
+				SetConsoleTextAttribute(hConsole, 7);	cout << setfill('.') << setw(80) << " " << setfill(' ');
+				cout << endl << endl << endl;
 			}
+
 			dist->printPop(verbose);
 			dist->alarm();
 			dist->bite();
@@ -101,47 +113,49 @@ public:
 	/*
 	* Prints the sum total of all zombies, alarmed and ignorant denizens from all districts.
 	*/
-
-	/*
-	void showTotal() {
-		int zombies = 0;
-		int alarmed = 0;
-		int ignorant = 0;
-
-		std::list<District*>::iterator it = districts.begin();
-		while (it != districts.end()) {
-			District* dist = *it;
-			zombies += dist->zombieTotal();
-			alarmed += dist->alarmedTotal();
-			ignorant += dist->ignorantTotal();
-			it++;
-		}
+	void simvilleSum() {
 
 		HANDLE hConsole; //Colored Console Text
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-		cout << endl << std::setw(12) << "ALL ZOMBIES: ";
-		SetConsoleTextAttribute(hConsole, 4);
-		cout << zombies;
-		SetConsoleTextAttribute(hConsole, 7);
-		cout << std::setw(19) << "ALL ALARMED: ";
-		SetConsoleTextAttribute(hConsole, 6);
-		cout << alarmed;
-		SetConsoleTextAttribute(hConsole, 7);
-		cout << std::setw(18) << "ALL IGNORANT: ";
-		SetConsoleTextAttribute(hConsole, 15);
-		cout << ignorant;
-		SetConsoleTextAttribute(hConsole, 7);
-		cout << std::setw(16) << "ALL TOTAL: " << zombies + alarmed + ignorant << endl << endl;
-	}
-	*/
+		cout << " Before and After:" << endl << std::setw(10) << " ALL ZOMBIES: ";
+		SetConsoleTextAttribute(hConsole, 4);	cout << zSum;
+		SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(19) << "ALL ALARMED: ";
+		SetConsoleTextAttribute(hConsole, 6);	cout << aSum;
+		SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(18) << "ALL IGNORANT: ";
+		SetConsoleTextAttribute(hConsole, 15);	cout << iSum;
+		SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(16) << "ALL TOTAL: " << zSum + aSum + iSum << "\n\n";
 
+		zSum = 0;
+		aSum = 0;
+		iSum = 0;
+
+		std::list<District*>::iterator it = districts.begin();
+		while (it != districts.end()) {
+			District* dist = *it;
+			dist->countPop();
+			zSum += dist->zombieTotal();
+			aSum += dist->alarmedTotal();
+			iSum += dist->ignorantTotal();
+			it++;
+		}
+
+		cout << std::setw(10) << " ALL ZOMBIES: ";
+		SetConsoleTextAttribute(hConsole, 4);	cout << zSum;
+		SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(19) << "ALL ALARMED: ";
+		SetConsoleTextAttribute(hConsole, 6);	cout << aSum;
+		SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(18) << "ALL IGNORANT: ";
+		SetConsoleTextAttribute(hConsole, 15);	cout << iSum;
+		SetConsoleTextAttribute(hConsole, 7);	cout << std::setw(16) << "ALL TOTAL: " << zSum + aSum + iSum << "\n\n\n";
+
+		cout << setfill('|') << std::setw(80) << " " << setfill(' ') << "\n";
+	}
+	
 	/**
 	* Generates a random population size for each district, then creates and adds that amount of denizens.
 	* Uses denizen names from the ones provided in Residents.txt file. 
 	**/
 	void populateDistrict() {
-		
 		array<int, 6>popDist;
 		
 		int randSum;
@@ -249,9 +263,10 @@ public:
 	}
 
 	/**
-	* Given a district and n amount of zombies to create, takes a random denizen
-	* from that district's populace list and checks to see if they are already a
-	* zombie. If not, the denizen's name is used to create a new zombie and then deleted.
+	* Used to create zombies at the start of the simulation.
+	* Given a district pointer and n amount of zombies to create, takes a random denizen
+	* from that district's populace list and checks to see if they are already a zombie.
+	* If not, the denizen's name is used to create a new zombie and the denizen is deleted.
 	**/
 	void createZombie(District* dist, int n) {
 		list<Denizen*>* newlist = dist->getPopulace();
@@ -279,6 +294,12 @@ public:
 		}
 	}
 
+	/**
+	* Used to create any alarmed at the start of the simulation.
+	* Given a district pointer and n amount of alarmed to create, takes a random denizen
+	* from that district's populace list and checks to see if they can be alarmed.
+	* If not, the denizen's name is used to create a new alarmed and the denizen is deleted.
+	**/
 	void createAlarmed(District* dist, int n) {
 		list<Denizen*>* newlist = dist->getPopulace();
 		random_device rand;
@@ -301,7 +322,6 @@ public:
 			}
 			else { //Is either Alarmed or a Zombie
 				cout << std::endl << "---------------------- " << D->getName() << " Can't be alarmed!!! -------------------------- " << std::endl;
-				// If a denizen tries to alarm a zombie, they should get bitten.  
 			}
 		}
 	}
@@ -309,7 +329,8 @@ public:
 	void move(District* dist) { 
 		list<Denizen*>* pop = dist->getPopulace();
 		std::list<Denizen*>::iterator mov = pop->begin();
-		
+		int toWork = 0;
+		int toHome = 0;
 			while (mov != pop->end()){
 			Denizen* current = *mov;
 			if(current->getTurnOver() == false){
@@ -325,11 +346,12 @@ public:
 							string itname = d->getName();
 							if (w == itname) {
 								Denizen* newd = new Ignorant(current->getName(), h, w);
-								cout << " " << newd->getName() << " is going to work." << endl;
+								//cout << " " << newd->getName() << " is going to work." << endl;
 								newd->setBiteChance(current->getBiteChance() + d->getDensity());
 								newd->setTurnOver(true);
 								d->addDenizen(newd);
 								mov = pop->erase(mov);
+								toWork++;
 							}
 							iterd++;
 						}							
@@ -341,11 +363,12 @@ public:
 							string itname = d->getName();
 							if (h == itname) {
 								Denizen* newd = new Ignorant(current->getName(), h, w);
-								cout << " " << newd->getName() << " is going home." << endl;
+								//cout << " " << newd->getName() << " is going home." << endl;
 								newd->setBiteChance(current->getBiteChance() + d->getDensity());
 								newd->setTurnOver(true);
 								d->addDenizen(newd);
 								mov = pop->erase(mov);
+								toHome++;
 							}
 							iterd++;
 						}
@@ -387,11 +410,12 @@ public:
 						moveTo->addDenizen(current);
 					}
 					mov = pop->erase(mov);
-					//mov--;
 				}
 			}
 			mov++;
 		} 
+			cout << " Denizens commuting to work: " << toWork++ << endl;
+			cout << " Denizens commuting home: " << toHome++ << endl;
 	} 
 
 	void resetTurn(District* dist) {
@@ -404,39 +428,7 @@ public:
 			}			
 			den++;
 		}		
-		//cout << "Turn reset" << endl << endl;
 		cout << endl;
-	}
-
-	void simvilleSum() {
-		int zombies = 0;
-		int alarmed = 0;
-		int ignorant = 0;
-		std::list<District*>::iterator it = districts.begin();
-		while (it != districts.end()) {
-			District* dist = *it;
-			dist->countPop();
-			zombies += dist->zombieTotal();
-			alarmed += dist->alarmedTotal();
-			ignorant += dist->ignorantTotal();
-			it++;
-		}
-		HANDLE hConsole; //Colored Console Text
-		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		cout << endl << std::setw(12) << "ALL ZOMBIES: ";
-		SetConsoleTextAttribute(hConsole, 4);
-		cout << zombies;
-		SetConsoleTextAttribute(hConsole, 7);
-		cout << std::setw(19) << "ALL ALARMED: ";
-		SetConsoleTextAttribute(hConsole, 6);
-		cout << alarmed;
-		SetConsoleTextAttribute(hConsole, 7);
-		cout << std::setw(18) << "ALL IGNORANT: ";
-		SetConsoleTextAttribute(hConsole, 15);
-		cout << ignorant;
-		SetConsoleTextAttribute(hConsole, 7);
-		cout << std::setw(16) << "ALL TOTAL: " << zombies + alarmed + ignorant << endl << endl;
 	}
 
 };

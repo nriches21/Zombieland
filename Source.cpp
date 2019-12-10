@@ -6,8 +6,8 @@
 #include <map>
 #include <windows.h>
 
-#include <ctype.h>
-#include <typeinfo>
+//#include <ctype.h>
+//#include <typeinfo>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
@@ -17,47 +17,26 @@
 #include "district.h"
 #undef max
 
-using namespace std;
+using std::cout;
+using std::cin;
+using std::endl;
 
 int main (){
 
 	/*****************************
 	* Enables colored console text API
-	* Turns game text green
-	//SetConsoleTextAttribute(hConsole, 7); //White text
-	//SetConsoleTextAttribute(hConsole, 10); //Green text
+	* Turns sim text different colors 
 	******************************/
 	HANDLE hConsole; 
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	string playAsk;
+	string p;
 	bool playSim = true;
 
+	string c;
+	bool contd = true;
+
 	do {
-		int Days = 0;
-		std::cout << "Number of Days to simulate: ";
-		std::cin >> Days;
-		Days = Days * 4;
-
-		if (std::cin.fail())
-		{
-			do {
-				std::cin.clear();
-				std::cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				std::cout << "PLEASE ENTER A VALID POSITIVE INTEGER." << std::endl;
-				std::cout << "Number of Days: ";
-				std::cin >> Days;
-			} while (std::cin.fail());
-		}
-
-		bool verbose = false;
-		string verboseAsk;
-		std::cout << "Verbose output for district populations? [Y/N] ";
-		std::cin >> verboseAsk;
-
-		if (verboseAsk == "Y" || verboseAsk == "y") {
-			verbose = true;
-		}
 
         #pragma region initialization
 
@@ -151,10 +130,32 @@ int main (){
 
 		#pragma region mainLoop
 
-		string contd;
-		bool c = true;
-
 		do {
+			int Days = 0;
+			cout << " Number of Days to simulate: ";
+			cin >> Days;
+			Days = Days * 4;
+
+			if (cin.fail())
+			{
+				do {
+					cin.clear();
+					cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+					cout << " PLEASE ENTER A VALID POSITIVE INTEGER." << endl;
+					cout << " Number of Days: ";
+					cin >> Days;
+				} while (std::cin.fail());
+			}
+
+			bool verbose = false;
+			string v;
+			cout << " Verbose output for district populations? [Y/N] ";
+			cin >> v;
+
+			if (v == "Y" || v == "y") {
+				verbose = true;
+			}
+
 			for (int i = 0; i < Days; i++) {
 
 				// Displays day and time 
@@ -162,26 +163,26 @@ int main (){
 				simville.hourTick();
 				SetConsoleTextAttribute(hConsole, 7); //text back white
 
-				// If true, displays population details per district
+				// If verbose, displays denizen names and statuses for each district
 				simville.districtPopulation(verbose);
 
-				// Displays total population in all of Simville
+				// Displays total population in Simville
 				simville.simvilleSum();
-				std::cout << std::endl;
+				cout << endl;
 			}
-			std::cout << std::endl << "Continue simulation? [Y/N] ";
-			std::cin >> contd;
-			if (contd != "Y" && contd != "y") {
-				c == false;
-			}
-			std::cout << "Number of Days to simulate: ";
-			std::cin >> Days;
-			Days = Days * 4;
-		} while (c == true);
 
-		std::cout << std::endl << "Play simulation again? [Y/N] ";
-		std::cin >> playAsk;
-		if (playAsk != "Y" && playAsk != "y") {
+			
+
+			cout << endl << " Continue simulation? [Y/N] ";
+			cin >> c;
+			if (c != "Y" && c != "y") {
+				contd = false;
+			}
+		} while (contd == true);
+
+		cout << endl << " New simulation? [Y/N] ";
+		cin >> p;
+		if (p != "Y" && p != "y") {
 			playSim = false;
 		}
 
