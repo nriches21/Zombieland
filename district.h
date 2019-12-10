@@ -128,7 +128,7 @@ public:
 						populace.push_back(new Zombie(d->getName()));
 						del = populace.erase(del); //delete the person at that iterator
 						populace.back()->setTurnOver(true); //set the new Zombies turnOver to be true
-						cout << " " << d->getName() << " has been bitten." << endl;
+						cout << " " << d->getName() << " has been bitten" << endl;
 						biteAttempt.pop(); //delete the person from the queue
 						del = populace.begin();
 					}
@@ -144,7 +144,7 @@ public:
 							populace.push_back(new Alarmed(i->getName(), chance)); //create a new alarmed and push it to the list
 							del = populace.erase(del); //delete ignorant
 							populace.back()->setTurnOver(true); //set turnover
-							cout << " " << i->getName() << " avoided being bitten and is now alarmed." << endl;
+							cout << " " << i->getName() << " avoided being bitten and is now alarmed" << endl;
 							biteAttempt.pop(); //delete the person from teh queue
 							del = populace.begin();
 						}
@@ -152,7 +152,7 @@ public:
 					}
 					
 					else if (biteAttempt.front()->getStatus() == "Alarmed") {
-						cout << " " << biteAttempt.front()->getName() << " avoided being bitten and is already alarmed." << endl;
+						cout << " " << biteAttempt.front()->getName() << " avoided being bitten and is already alarmed" << endl;
 						biteAttempt.front()->setTurnOver(true); //set the turn over to be true for the alarmed person
 						biteAttempt.pop();
 						del = populace.begin();
@@ -195,12 +195,11 @@ public:
 								populace.push_back(new Alarmed(d->getName(), chance));
 								del = populace.erase(del); //delete the person at that iterator
 								populace.back()->setTurnOver(true); //set the new Alarmed turnOver to be true
-								cout << " " << d->getName() << " has been alarmed." << endl;
+								cout << " " << d->getName() << " has been alarmed" << endl;
 								//biteAttempt.pop(); //delete the person from the queue
 								numB--;
 							
 						}
-						
 					}
 					++del;
 				}
@@ -211,6 +210,20 @@ public:
 	* Prints population of zombies, alarmed and ignorant denizens in this district.
 	* Also prints the name of each denizen.
 	*/
+
+	void countPop() {
+		zombies = 0;
+		alarmed = 0;
+		ignorant = 0;
+		list<Denizen*>::iterator it = populace.begin();
+		while (it != populace.end()) {
+			Denizen* pointr = *it;
+			if (pointr->getStatus() == "Zombie") ++zombies;
+			else if (pointr->getStatus() == "Alarmed") ++alarmed;
+			else ++ignorant;
+			++it;
+		}
+	}
 
 	void printPop(bool verbose) {
 		zombies = 0;
@@ -246,12 +259,12 @@ public:
 					cout << std::setw(13) << pointr->getName();
 				}
 
-				cout << ": " << std::left << setw(4) << pointr->getBiteChance() << "  -  "; //Uncomment to see bite chance
+				//cout << ": " << std::left << setw(4) << pointr->getBiteChance() << "  -  "; //Uncomment to see bite chance
 				Ignorant* ig = dynamic_cast<Ignorant*>(pointr);
-				if (ig) {
-					cout << "Home: " << setw(20) <<  ig->getHome() << "Work: " << setw(20) << ig->getWork(); //Uncomment to see work and home districts
-				}
-				cout << std::right << endl;
+				//if (ig) {
+				//	cout << "Home: " << setw(20) <<  ig->getHome() << "Work: " << setw(20) << ig->getWork(); //Uncomment to see work and home districts
+				//}
+				//cout << std::right << endl;
 			}
 
 			if (pointr->getStatus() == "Zombie") ++zombies;

@@ -77,11 +77,11 @@ int main (){
 		simville.addDist(&med);
 		simville.addDist(&doc);
 
-		//everything has a north south east west, if there is nothing in that direction the map holds a pointer to itself
+		//everything has a north south east west, all directions lead to a different district.
 		med.addConnection('n', &upt);
 		med.addConnection('e', &dow);
 		med.addConnection('s', &doc);
-		med.addConnection('w', &doc); //there is nothing west, so if they want to move west they just stay in the same place
+		med.addConnection('w', &doc);
 
 		doc.addConnection('n', &med);
 		doc.addConnection('e', &dow);
@@ -141,15 +141,6 @@ int main (){
 		soh.addConnection('w', &dow);
 		*/
 
-		/*Ignorant s1("Person", "Downtown", "The University");//Testing
-		Ignorant s2("Human", "Downtown", "The University");//Testing
-		s1.setBiteChance(150);
-		s2.setBiteChance(150);
-		uni.addDenizen(&s1);//Testing
-		uni.addDenizen(&s2);//Testing
-		s1.setBiteChance(50); //Testing
-		s2.setBiteChance(100); //Testing*/
-
 		simville.populateDistrict();
 
 		simville.createAlarmed (&dow, 1); //Testing
@@ -175,9 +166,8 @@ int main (){
 				simville.districtPopulation(verbose);
 
 				// Displays total population in all of Simville
-				simville.showTotal();
+				simville.simvilleSum();
 				std::cout << std::endl;
-				//simville.createZombie(&uni, 1); //Testing
 			}
 			std::cout << std::endl << "Continue simulation? [Y/N] ";
 			std::cin >> contd;
@@ -188,7 +178,6 @@ int main (){
 			std::cin >> Days;
 			Days = Days * 4;
 		} while (c == true);
-		
 
 		std::cout << std::endl << "Play simulation again? [Y/N] ";
 		std::cin >> playAsk;

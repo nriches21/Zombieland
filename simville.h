@@ -91,7 +91,6 @@ public:
 			dist->printPop(verbose);
 			dist->alarm();
 			dist->bite();
-			//resetTurn(dist);
 			move(dist);
 			resetTurn(dist);
 			
@@ -102,6 +101,8 @@ public:
 	/*
 	* Prints the sum total of all zombies, alarmed and ignorant denizens from all districts.
 	*/
+
+	/*
 	void showTotal() {
 		int zombies = 0;
 		int alarmed = 0;
@@ -133,6 +134,7 @@ public:
 		SetConsoleTextAttribute(hConsole, 7);
 		cout << std::setw(16) << "ALL TOTAL: " << zombies + alarmed + ignorant << endl << endl;
 	}
+	*/
 
 	/**
 	* Generates a random population size for each district, then creates and adds that amount of denizens.
@@ -146,8 +148,8 @@ public:
 		double coefficient;
 		double leftover;
 		int minimum;
-		//int total = 2000;
-		int total = 50; //For testing, delete later
+		int total = 2000;
+		//int total = 150; //For testing, delete later
 
 		random_device ran;
 
@@ -385,7 +387,7 @@ public:
 						moveTo->addDenizen(current);
 					}
 					mov = pop->erase(mov);
-					mov--;
+					//mov--;
 				}
 			}
 			mov++;
@@ -406,98 +408,36 @@ public:
 		cout << endl;
 	}
 
-	/** //move()
-	* Iterate through the entire list of denizens, check if denizen already made an action (turnOver bool)
-	* If not, then check if ignorant; if ignorant, check time tick, and if they move this tick, then move to home or work.
-	* Simville has a map of denizens and districts. move() takes a pointer to Simville's map and modifies denizen locations.
-	* map<denizen*, district name string>some_map
-	* After move, delete denizen from this list and push new pair to simville's map.
-	* Zombie and Alarmed move- move into any connected district at random. Delete from list and push new pair to map.
-	* District has to update list based on Simville's map each time tick.
-	**/
-	/*void move(District* inputDistrict) {
-		list<Denizen*>* pop = inputDistrict->getPopulace();
-		std::list<Denizen*>::iterator mov = pop->begin(); //iterator to the beginning of the populace list
-		cout << "mov" << endl;
-		mov++;
-		Denizen* current;
-
-		while (mov != pop->end()) {
-			cout << "mov has either just been set or iterated." << endl;
-			current = *mov;
-			//mov++;
-
-			if (current->getTurnOver() == false) {
-
-				if (current->getStatus() == "Ignorant") {
-					string h = dynamic_cast<Ignorant*>(current)->getHome();
-					string w = dynamic_cast<Ignorant*>(current)->getWork();
-
-					if (hourT - 6 == 6) { //if it's 6 in the morning, go to work
-						cout << hourShow() << endl;
-						cout << current->getName() << " is going to work!" << endl;
-						std::list<District*>::iterator dist = districts.begin();
-						District* d;
-
-						while (dist != districts.end() && current->getTurnOver()!=true) {
-							d = *dist;
-							if (d->getName() == w) {
-								cout << current->getName() << " is about to move." << endl;
-								current->setTurnOver(true);
-								d->addDenizen(current);//push the same person to the district where they work
-								inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
-							}
-							cout << "dist++" << endl;
-							dist++;
-						}
-					}
-					else if (hourT - 6 == 18) { //if it's 6 at night, go home
-						std::list<District*>::iterator dist = districts.begin();
-						District* d = *dist;
-						while (dist != districts.end()) {
-							if (d->getName() == h) {
-								d->addDenizen(current);//push the same person to the district where they live
-								inputDistrict->removeDenizen(current); //delete them from the current list (in the district they are currently in)
-								cout << current->getName() << " moved." << endl;
-							}
-							dist++;
-						}
-					}
-				}
-				else {
-					map<char, District*>* connect = inputDistrict->getConnections(); //see the districts you are connected to 
-					map<char, District*> connect2 = *inputDistrict->getConnections(); //see the districts you are connected to 
-					District* moveTo = NULL;
-					random_device rand;
-					int randDirection = rand() % 4;
-					switch (randDirection) {
-					case 0:
-						moveTo = connect2['n']; //move north is random is 0
-						break;
-					case 1:
-						moveTo = connect2['e']; //move east if random is 1
-						break;
-					case 2:
-						moveTo = connect2['s']; //move south if random is 2
-						break;
-					case 3:
-						moveTo = connect2['w']; //move west if random is 3
-					}
-					std::list<District*>::iterator dist = districts.begin();
-					District* distr = *dist;
-
-					while (distr->getName() != moveTo->getName()) {
-						distr++;
-					}
-					
-					distr->addDenizen(current);
-					inputDistrict->removeDenizen(current); //delete them from the current list (the district they are right now)
-				}
-			}
-			cout << "Iterator mov++" << endl;
-			mov++;
+	void simvilleSum() {
+		int zombies = 0;
+		int alarmed = 0;
+		int ignorant = 0;
+		std::list<District*>::iterator it = districts.begin();
+		while (it != districts.end()) {
+			District* dist = *it;
+			dist->countPop();
+			zombies += dist->zombieTotal();
+			alarmed += dist->alarmedTotal();
+			ignorant += dist->ignorantTotal();
+			it++;
 		}
-	}*/
+		HANDLE hConsole; //Colored Console Text
+		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		cout << endl << std::setw(12) << "ALL ZOMBIES: ";
+		SetConsoleTextAttribute(hConsole, 4);
+		cout << zombies;
+		SetConsoleTextAttribute(hConsole, 7);
+		cout << std::setw(19) << "ALL ALARMED: ";
+		SetConsoleTextAttribute(hConsole, 6);
+		cout << alarmed;
+		SetConsoleTextAttribute(hConsole, 7);
+		cout << std::setw(18) << "ALL IGNORANT: ";
+		SetConsoleTextAttribute(hConsole, 15);
+		cout << ignorant;
+		SetConsoleTextAttribute(hConsole, 7);
+		cout << std::setw(16) << "ALL TOTAL: " << zombies + alarmed + ignorant << endl << endl;
+	}
 
 };
 
