@@ -89,10 +89,12 @@ public:
 				cout << setfill('.') << std::setw(80) << " " << setfill(' ') << endl << endl << endl;
 			}
 			dist->printPop(verbose);
-			//dist->alarm();
-			//dist->bite();
+			dist->alarm();
+			dist->bite();
+			//resetTurn(dist);
 			move(dist);
-
+			resetTurn(dist);
+			
 			it++;
 		}
 	}
@@ -302,23 +304,26 @@ public:
 		}
 	}
 
-	void move(District* dist) {
+	void move(District* dist) { 
 		list<Denizen*>* pop = dist->getPopulace();
 		std::list<Denizen*>::iterator mov = pop->begin();
-
-		while (mov != pop->end()){
+		
+			while (mov != pop->end()){
 			Denizen* current = *mov;
 			if(current->getTurnOver() == false){
 				if (current->getStatus() == "Ignorant") {
+					
 					string h = dynamic_cast<Ignorant*>(current)->getHome();
 					string w = dynamic_cast<Ignorant*>(current)->getWork();
-					if (hourT - 6 == 6) {						
+					if (hourT - 6 == 6) {					
+						
 						std::list<District*>::iterator iterd = districts.begin();
 						while (iterd != districts.end()) {
 							District* d = *iterd;
 							string itname = d->getName();
 							if (w == itname) {
 								Denizen* newd = new Ignorant(current->getName(), h, w);
+								cout << " " << newd->getName() << " is going to work." << endl;
 								newd->setBiteChance(current->getBiteChance() + d->getDensity());
 								newd->setTurnOver(true);
 								d->addDenizen(newd);
@@ -334,6 +339,7 @@ public:
 							string itname = d->getName();
 							if (h == itname) {
 								Denizen* newd = new Ignorant(current->getName(), h, w);
+								cout << " " << newd->getName() << " is going home." << endl;
 								newd->setBiteChance(current->getBiteChance() + d->getDensity());
 								newd->setTurnOver(true);
 								d->addDenizen(newd);
@@ -343,12 +349,13 @@ public:
 						}
 					}
 				}
-				else {
+				else { //Buggy
 					map<char, District*>* connect = dist->getConnections(); //see the districts you are connected to
 					map<char, District*> connect2 = *dist->getConnections(); //see the districts you are connected to
 					District* moveTo = NULL;
 					random_device rand;
 					int randDirection = rand() % 4;
+
 					switch (randDirection) {
 					case 0:
 						moveTo = connect2['n']; //move north is random is 0
@@ -363,21 +370,22 @@ public:
 						moveTo = connect2['w']; //move west if random is 3
 						break;
 					}
+
 					int biteChance = current->getBiteChance() + moveTo->getDensity();
 					if (current->getStatus() == "Alarmed") {
 						Denizen* newd = new Alarmed(current->getName(), biteChance);
+						cout << " " << newd->getName() << " is screaming and running to " << moveTo->getName() << endl;
 						newd->setTurnOver(true);
 						moveTo->addDenizen(current);
-						mov = pop->erase(mov);
 					}
 					else {
 						Denizen* newd = new Zombie(current->getName());
+						cout << " " << newd->getName() << " is a zombie on the move to " << moveTo->getName() << endl;
 						newd->setTurnOver(true);
 						moveTo->addDenizen(current);
-						mov = pop->erase(mov);
 					}
-					//moveTo->addDenizen(current);
-					//mov = pop->erase(mov);
+					mov = pop->erase(mov);
+					mov--;
 				}
 			}
 			mov++;
@@ -386,10 +394,16 @@ public:
 
 	void resetTurn(District* dist) {
 		list<Denizen*>* pop = dist->getPopulace();
-		std::list<Denizen*>::iterator del = pop->begin();
-
-		Denizen* d;
-		d->setTurnOver(false);
+		std::list<Denizen*>::iterator den = pop->begin();
+		while (den != pop->end()) {
+			Denizen* d = *den;
+			if (d->getTurnOver() == true) {
+				d->setTurnOver(false);
+			}			
+			den++;
+		}		
+		//cout << "Turn reset" << endl << endl;
+		cout << endl;
 	}
 
 	/** //move()

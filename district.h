@@ -46,7 +46,7 @@ public:
 	void addDenizen(Denizen* de) { populace.push_back(de);	}
 	//void addIgnorant(Denizen* de, string h, string w) { populace.push_back(new Ignorant(de->getName(), h, w)); }
 	void removeDenizen(Denizen* de) {
-		cout << "Removing Denizen " << de->getName() << endl;
+		cout << " Removing Denizen " << de->getName() << endl;
 		populace.remove(de); }
 	int getDensity() { return density; }
 	void addConnection(char direction, District* location) { connections.insert({ direction, location }); }
@@ -95,10 +95,17 @@ public:
 	void bite() { //From Nora's branch
 
 		if (zombies != 0) {
-
-			fillQueue(zombies); //Get as many Denizens to bite as there are zombies
-			cout << "biteAttempt size: " << biteAttempt.size() << endl;
+			srand(time(0));
+			int j = rand() % zombies;
 			int i = 0;
+
+			if (zombies < 5) {
+				j = zombies;
+			}
+			
+
+			fillQueue(j); //Get as many Denizens to bite as there are zombies
+			
 			std::list<Denizen*>::iterator zom = populace.begin(); //iterator to the end of the list (should point to the zombies)
 			while (zom != populace.end()) {
 				Denizen* z = *zom;
@@ -106,9 +113,8 @@ public:
 					z->setTurnOver(true); //simulate that a zombie attempted to bite and used their turn this time tick
 					i++;
 				}
-				if (i == zombies) { break; }
+				if (i == j) { break; }
 				zom++;
-				
 			}
 
 			srand(time(0));
@@ -116,16 +122,15 @@ public:
 			std::list<Denizen*>::iterator del = populace.begin();
 			while (del != populace.end() && biteAttempt.size() != 0) {
 				int prob = 1 + rand() % 10;
-				if (prob <= 7) { //bite successful
+				if (prob <= 8) { //bite successful
 					Denizen* d = *del;
 					if (d == biteAttempt.front()) {
 						populace.push_back(new Zombie(d->getName()));
 						del = populace.erase(del); //delete the person at that iterator
 						populace.back()->setTurnOver(true); //set the new Zombies turnOver to be true
-						cout << d->getName() << " has been bitten." << endl;
+						cout << " " << d->getName() << " has been bitten." << endl;
 						biteAttempt.pop(); //delete the person from the queue
 						del = populace.begin();
-						cout << "biteAttempt size: " << biteAttempt.size() << endl;
 					}
 					++del;
 				}
@@ -139,20 +144,18 @@ public:
 							populace.push_back(new Alarmed(i->getName(), chance)); //create a new alarmed and push it to the list
 							del = populace.erase(del); //delete ignorant
 							populace.back()->setTurnOver(true); //set turnover
-							cout << i->getName() << " avoided being bitten and is now alarmed." << endl;
+							cout << " " << i->getName() << " avoided being bitten and is now alarmed." << endl;
 							biteAttempt.pop(); //delete the person from teh queue
 							del = populace.begin();
-							cout << "biteAttempt size: " << biteAttempt.size() << endl;
 						}
 						del++;
 					}
 					
 					else if (biteAttempt.front()->getStatus() == "Alarmed") {
-						cout << biteAttempt.front()->getName() << " avoided being bitten and is already alarmed." << endl;
+						cout << " " << biteAttempt.front()->getName() << " avoided being bitten and is already alarmed." << endl;
 						biteAttempt.front()->setTurnOver(true); //set the turn over to be true for the alarmed person
 						biteAttempt.pop();
 						del = populace.begin();
-						cout << "biteAttempt size: " << biteAttempt.size() << endl;
 					}
 				}
 			}
@@ -162,7 +165,10 @@ public:
 
 	void alarm() { //From Nora's branch
 		if (alarmed != 0) {
-			int numA = alarmed;
+			srand(time(0));
+
+			int numA = rand() % alarmed;
+			int numB = alarmed - numA;
 			int i = 0;
 			std::list<Denizen*>::iterator alrm = populace.begin(); //iterator to the end of the list (should point to the zombies)
 			while (alrm != populace.end()) {
@@ -171,15 +177,15 @@ public:
 					a->setTurnOver(true); //simulate that a zombie attempted to bite and used their turn this time tick
 					i++;
 				}
-				if (i == alarmed) { break; }
+				if (i == numA) { break; }
 				alrm++;
 			}
 
-			srand(time(0));
+			
 			std::list<Denizen*>::iterator del = populace.begin();
 			int randDenizen = rand() % populace.size();
 			advance(del, randDenizen);
-			while (del != populace.end() && numA != 0) {
+			while (del != populace.end() && numB != 0) {
 				Denizen* d = *del;
 					if (d->getStatus() == "Ignorant") {
 						int prob = 1 + rand() % 10;
@@ -189,11 +195,9 @@ public:
 								populace.push_back(new Alarmed(d->getName(), chance));
 								del = populace.erase(del); //delete the person at that iterator
 								populace.back()->setTurnOver(true); //set the new Alarmed turnOver to be true
-								cout << d->getName() << " has been alarmed." << endl;
+								cout << " " << d->getName() << " has been alarmed." << endl;
 								//biteAttempt.pop(); //delete the person from the queue
-								numA--;
-								cout << "NumA: " << numA << endl;
-							
+								numB--;
 							
 						}
 						
@@ -242,10 +246,10 @@ public:
 					cout << std::setw(13) << pointr->getName();
 				}
 
-				cout << ": " << std::left << setw(4) << pointr->getBiteChance() << "  -  ";
+				cout << ": " << std::left << setw(4) << pointr->getBiteChance() << "  -  "; //Uncomment to see bite chance
 				Ignorant* ig = dynamic_cast<Ignorant*>(pointr);
 				if (ig) {
-					cout << "Home: " << setw(20) <<  ig->getHome() << "Work: " << setw(20) << ig->getWork();
+					cout << "Home: " << setw(20) <<  ig->getHome() << "Work: " << setw(20) << ig->getWork(); //Uncomment to see work and home districts
 				}
 				cout << std::right << endl;
 			}

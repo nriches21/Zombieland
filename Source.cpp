@@ -81,6 +81,38 @@ int main (){
 		med.addConnection('n', &upt);
 		med.addConnection('e', &dow);
 		med.addConnection('s', &doc);
+		med.addConnection('w', &doc); //there is nothing west, so if they want to move west they just stay in the same place
+
+		doc.addConnection('n', &med);
+		doc.addConnection('e', &dow);
+		doc.addConnection('s', &dow);
+		doc.addConnection('w', &dow);
+
+		upt.addConnection('n', &uni);
+		upt.addConnection('e', &soh);
+		upt.addConnection('s', &dow);
+		upt.addConnection('w', &med);
+
+		dow.addConnection('n', &upt);
+		dow.addConnection('e', &soh);
+		dow.addConnection('s', &doc);
+		dow.addConnection('w', &med);
+
+		uni.addConnection('n', &upt);
+		uni.addConnection('e', &upt);
+		uni.addConnection('s', &upt);
+		uni.addConnection('w', &upt);
+
+		soh.addConnection('n', &upt);
+		soh.addConnection('e', &uni);
+		soh.addConnection('s', &uni);
+		soh.addConnection('w', &dow);
+
+
+		/*//everything has a north south east west, if there is nothing in that direction the map holds a pointer to itself
+		med.addConnection('n', &upt);
+		med.addConnection('e', &dow);
+		med.addConnection('s', &doc);
 		med.addConnection('w', &med); //there is nothing west, so if they want to move west they just stay in the same place
 
 		doc.addConnection('n', &med);
@@ -107,6 +139,7 @@ int main (){
 		soh.addConnection('e', &soh);
 		soh.addConnection('s', &uni);
 		soh.addConnection('w', &dow);
+		*/
 
 		/*Ignorant s1("Person", "Downtown", "The University");//Testing
 		Ignorant s2("Human", "Downtown", "The University");//Testing
@@ -119,28 +152,43 @@ int main (){
 
 		simville.populateDistrict();
 
-		simville.createAlarmed (&uni, 1); //Testing
-		simville.createZombie(&uni, 1); //Testing
+		simville.createAlarmed (&dow, 1); //Testing
+		simville.createZombie(&dow, 1); //Testing
 
         #pragma endregion
 
 
 		#pragma region mainLoop
 
-		for (int i = 0; i < Days; i++) {
+		string contd;
+		bool c = true;
 
-			// Displays day and time 
-			SetConsoleTextAttribute(hConsole, 2); //text green
-			simville.hourTick();
-			SetConsoleTextAttribute(hConsole, 7); //text back white
+		do {
+			for (int i = 0; i < Days; i++) {
 
-			// If true, displays population details per district
-			simville.districtPopulation(verbose);
+				// Displays day and time 
+				SetConsoleTextAttribute(hConsole, 2); //text green
+				simville.hourTick();
+				SetConsoleTextAttribute(hConsole, 7); //text back white
 
-			// Displays total population in all of Simville
-			simville.showTotal();
-			std::cout << std::endl;
-		}
+				// If true, displays population details per district
+				simville.districtPopulation(verbose);
+
+				// Displays total population in all of Simville
+				simville.showTotal();
+				std::cout << std::endl;
+				//simville.createZombie(&uni, 1); //Testing
+			}
+			std::cout << std::endl << "Continue simulation? [Y/N] ";
+			std::cin >> contd;
+			if (contd != "Y" && contd != "y") {
+				c == false;
+			}
+			std::cout << "Number of Days to simulate: ";
+			std::cin >> Days;
+			Days = Days * 4;
+		} while (c == true);
+		
 
 		std::cout << std::endl << "Play simulation again? [Y/N] ";
 		std::cin >> playAsk;
