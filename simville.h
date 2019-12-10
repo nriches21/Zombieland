@@ -307,16 +307,13 @@ public:
 		list<Denizen*>* pop = dist->getPopulace();
 		std::list<Denizen*>::iterator mov = pop->begin();
 
-		while (mov != pop->end()) {
-			//cout << "do stuff" << endl;
+		while (mov != pop->end()){
 			Denizen* current = *mov;
-			//cout << current->getName() << endl;
 			if(current->getTurnOver() == false){
 				if (current->getStatus() == "Ignorant") {
 					string h = dynamic_cast<Ignorant*>(current)->getHome();
 					string w = dynamic_cast<Ignorant*>(current)->getWork();
-					if (hourT - 6 == 6) {
-						
+					if (hourT - 6 == 6) {						
 						std::list<District*>::iterator iterd = districts.begin();
 						while (iterd != districts.end()) {
 							District* d = *iterd;
@@ -326,23 +323,63 @@ public:
 								newd->setBiteChance(current->getBiteChance() + d->getDensity());
 								newd->setTurnOver(true);
 								d->addDenizen(newd);
-								//std::list<Denizen*>::iterator Nmov = mov;
-								//mov = pop->erase(mov);
-								//d->removeDenizen(current);
-								//d->addDenizen(current);
-								//cout << current->getName() << endl;
-								//cout << w << endl;
-
+								mov = pop->erase(mov);
+							}
+							iterd++;
+						}							
+					}
+					else if (hourT - 6 == 18) {
+						std::list<District*>::iterator iterd = districts.begin();
+						while (iterd != districts.end()) {
+							District* d = *iterd;
+							string itname = d->getName();
+							if (h == itname) {
+								Denizen* newd = new Ignorant(current->getName(), h, w);
+								newd->setBiteChance(current->getBiteChance() + d->getDensity());
+								newd->setTurnOver(true);
+								d->addDenizen(newd);
+								mov = pop->erase(mov);
 							}
 							iterd++;
 						}
-							
 					}
+				}
+				else {
+					map<char, District*>* connect = dist->getConnections(); //see the districts you are connected to
+					map<char, District*> connect2 = *dist->getConnections(); //see the districts you are connected to
+					District* moveTo = NULL;
+					random_device rand;
+					int randDirection = rand() % 4;
+					switch (randDirection) {
+					case 0:
+						moveTo = connect2['n']; //move north is random is 0
+						break;
+					case 1:
+						moveTo = connect2['e']; //move east if random is 1
+						break;
+					case 2:
+						moveTo = connect2['s']; //move south if random is 2
+						break;
+					case 3:
+						moveTo = connect2['w']; //move west if random is 3
+						break;
+					}
+					int biteChance = current->getBiteChance() + moveTo->getDensity();
+					if (current->getStatus() == "Alarmed") {
+						Denizen* newd = new Alarmed(current->getName(), biteChance);
+						newd->setTurnOver(true);
+					}
+					else {
+						Denizen* newd = new Zombie(current->getName());
+						newd->setTurnOver(true);
+					}
+					moveTo->addDenizen(current);
+					mov = pop->erase(mov);
 				}
 			}
 			mov++;
-		}
-	}
+		} 
+	} 
 
 
 	/** //move()
