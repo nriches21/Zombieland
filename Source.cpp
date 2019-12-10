@@ -1,4 +1,4 @@
-#include <iostream>
+#include <iostream>// included the 
 #include <vector>
 #include <list>
 #include <string>
@@ -10,6 +10,7 @@
 #include <typeinfo>
 #include <stdlib.h>
 #include <stdio.h>
+#include <fstream>
 
 #include "simville.h"
 #include "denizen.h"
@@ -19,6 +20,7 @@
 using namespace std;
 
 int main (){
+
 	/*****************************
 	* Enables colored console text API
 	* Turns game text green
@@ -28,88 +30,132 @@ int main (){
 	HANDLE hConsole; 
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	Simville simville;
-	District d1("Soho");
-	District d2("Uptown");
-	District d3("Downtown");
+	string playAsk;
+	bool playSim = true;
 
-	Denizen de1("Mr. Sir");
-	Denizen de2("Ms. Ma'am");
-	Denizen de3("Mrs. Missus");
-	Denizen de4("Dr. Doc");
-	Denizen de5("Professor Prof");
-	Zombie z1("Bob");
-	Alarmed a1("Dennis");
-
-	simville.addDenizen2(&d1, de1);
-	simville.addDenizen2(&d1, de2);
-	simville.addDenizen2(&d2, de3);
-	simville.addDenizen2(&d3, de4);
-	simville.addDenizen2(&d3, de5);
-	simville.addDenizen2(&d3, z1);
-	simville.addDenizen2(&d3, a1);
-	//simville.addDenizen3(&d3, &z1); //Not sure if we need v3 of everything?
-
-	cout << "\nSimville methods output: " << endl;
-	simville.printPop(&d1);
-	simville.printPop(&d2);
-	simville.printPop(&d3);
-	int total = simville.districtPop(&d1) + simville.districtPop(&d2) + simville.districtPop(&d3);
-	cout << endl << "Total population: " << total << endl;
-
-	bool simOver = false;
-	int Days = 0;
-
-	// Prompts user for a number of days to simulate
-	cout << "Number of Days to simulate: ";
-	cin >> Days;
-
-	// Incorrect input for days triggers user validation 
-	if (cin.fail())
-	{
-		do {
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			cout << "PLEASE ENTER A VALID POSITIVE INTEGER." << endl;
-			cout << "Number of Days: ";
-			cin >> Days;
-		} while (cin.fail());		
-	}
- 
-	// Main simulation loop
 	do {
-		for (int i = 0; i < Days * 4; i++) {
-			SetConsoleTextAttribute(hConsole, 10); //Sets time text to green
-			simville.hourTick();
-			SetConsoleTextAttribute(hConsole, 7); //Sets text back to white
-			de1.speak();
-			z1.speak();
-			a1.speak();
+		int Days = 0;
+		std::cout << "Number of Days to simulate: ";
+		std::cin >> Days;
+		Days = Days * 4;
+
+		if (std::cin.fail())
+		{
+			do {
+				std::cin.clear();
+				std::cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				std::cout << "PLEASE ENTER A VALID POSITIVE INTEGER." << std::endl;
+				std::cout << "Number of Days: ";
+				std::cin >> Days;
+			} while (std::cin.fail());
 		}
-		simOver = true;
-	} while (simOver == false);
 
-/*
-	// Multimap example
-	multimap<const char*, int> m;
+		bool verbose = false;
+		string verboseAsk;
+		std::cout << "Verbose output for district populations? [Y/N] ";
+		std::cin >> verboseAsk;
 
-	cout << endl;
-	m.insert(pair<const char* const, int>("a", 1));
-	m.insert(pair<const char* const, int>("c", 2));
-	m.insert(pair<const char* const, int>("b", 3));
-	m.insert(pair<const char* const, int>("b", 4));
-	m.insert(pair<const char* const, int>("a", 5));
-	m.insert(pair<const char* const, int>("b", 6));
+		if (verboseAsk == "Y" || verboseAsk == "y") {
+			verbose = true;
+		}
 
-	cout << "Number of elements with key a: " << m.count("a") << endl;
-	cout << "Number of elements with key b: " << m.count("b") << endl;
-	cout << "Number of elements with key c: " << m.count("c") << endl;
+        #pragma region initialization
 
-	cout << "Elements in m: " << endl;
-	for (multimap<const char*, int>::iterator it = m.begin();
-		it != m.end();
-		++it)
-		cout << "  [" << (*it).first << ", " << (*it).second << "]" << endl;
-		*/
+		Simville simville;
+
+		District upt("Uptown");
+		District dow("Downtown");
+		District uni("The University");
+		District soh("Soho");
+		District med("Medical Hill");
+		District doc("The Docks");
+
+		simville.addDist(&upt);
+		simville.addDist(&dow);
+		simville.addDist(&uni);
+		simville.addDist(&soh);
+		simville.addDist(&med);
+		simville.addDist(&doc);
+
+		//everything has a north south east west, all directions lead to a different district.
+		med.addConnection('n', &upt);
+		med.addConnection('e', &dow);
+		med.addConnection('s', &doc);
+		med.addConnection('w', &doc);
+
+		doc.addConnection('n', &med);
+		doc.addConnection('e', &dow);
+		doc.addConnection('s', &dow);
+		doc.addConnection('w', &dow);
+
+		upt.addConnection('n', &uni);
+		upt.addConnection('e', &soh);
+		upt.addConnection('s', &dow);
+		upt.addConnection('w', &med);
+
+		dow.addConnection('n', &upt);
+		dow.addConnection('e', &soh);
+		dow.addConnection('s', &doc);
+		dow.addConnection('w', &med);
+
+		uni.addConnection('n', &upt);
+		uni.addConnection('e', &upt);
+		uni.addConnection('s', &upt);
+		uni.addConnection('w', &upt);
+
+		soh.addConnection('n', &upt);
+		soh.addConnection('e', &uni);
+		soh.addConnection('s', &uni);
+		soh.addConnection('w', &dow);
+
+
+		simville.populateDistrict();
+
+		simville.createAlarmed (&dow, 1); //Testing
+		simville.createZombie(&dow, 1); //Testing
+
+        #pragma endregion
+
+
+		#pragma region mainLoop
+
+		string contd;
+		bool c = true;
+
+		do {
+			for (int i = 0; i < Days; i++) {
+
+				// Displays day and time 
+				SetConsoleTextAttribute(hConsole, 2); //text green
+				simville.hourTick();
+				SetConsoleTextAttribute(hConsole, 7); //text back white
+
+				// If true, displays population details per district
+				simville.districtPopulation(verbose); 
+
+				// Displays total population in all of Simville
+				simville.simvilleSum();
+				std::cout << std::endl;
+			}
+			std::cout << std::endl << "Continue simulation? [Y/N] ";
+			std::cin >> contd;
+			if (contd != "Y" && contd != "y") {
+				c == false;
+			}
+			std::cout << "Number of Days to simulate: ";
+			std::cin >> Days;
+			Days = Days * 4;
+		} while (c == true);
+
+		std::cout << std::endl << "Play simulation again? [Y/N] ";
+		std::cin >> playAsk;
+		if (playAsk != "Y" && playAsk != "y") {
+			playSim = false;
+		}
+
+	} while (playSim == true);
+			
+	#pragma endregion
+
 	return 0;
 }
