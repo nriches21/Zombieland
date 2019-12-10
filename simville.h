@@ -326,6 +326,8 @@ public:
 								newd->setBiteChance(current->getBiteChance() + d->getDensity());
 								newd->setTurnOver(true);
 								d->addDenizen(newd);
+								//std::list<Denizen*>::iterator Nmov = mov;
+								//mov = pop->erase(mov);
 								//d->removeDenizen(current);
 								//d->addDenizen(current);
 								//cout << current->getName() << endl;
