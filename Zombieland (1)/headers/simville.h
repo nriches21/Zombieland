@@ -306,9 +306,9 @@ public:
 							if (w == itname) { //if we are at the correct district
 								Denizen* newd = new Ignorant(current->getName(), h, w); //create new ignorant (same person)
 								newd->setBiteChance(current->getBiteChance() + d->getDensity()); //set bite chance of new person (based on old things)
-								if (verbose == true){
-									newd->speak(); //if the user wants the verbose description, have the new denizen speak
-								}
+								// if (verbose == true){
+								// 	newd->speak(); //if the user wants the verbose description, have the new denizen speak
+								// }
 								newd->setTurnOver(true);
 								d->addDenizen(newd); //add the denizen to the correct district
 								mov = pop->erase(mov); //erase the old person
@@ -326,9 +326,9 @@ public:
 								Denizen* newd = new Ignorant(current->getName(), h, w);
 								cout << " " << newd->getName() << " is going home." << endl;
 								newd->setBiteChance(current->getBiteChance() + d->getDensity());
-								if (verbose == true){
-									newd->speak(); //if the user wants the verbose description, have the new denizen speak
-								}
+								// if (verbose == true){
+								// 	newd->speak(); //if the user wants the verbose description, have the new denizen speak
+								// }
 								newd->setTurnOver(true);
 								d->addDenizen(newd);
 								mov = pop->erase(mov);
@@ -365,18 +365,18 @@ public:
 						Denizen* newd = new Alarmed(current->getName(), biteChance);
 						cout << " " << newd->getName() << " is screaming and running to " << moveTo->getName() << endl;
 						newd->setTurnOver(true);
-						if (verbose == true){
-							newd->speak(); //if the user wants the verbose description, have the new denizen speak
-						}
+						// if (verbose == true){
+						// 	newd->speak(); //if the user wants the verbose description, have the new denizen speak
+						// }
 						moveTo->addDenizen(current);
 					}
 					else { //if they are a zombie, create a new zombie to push to the moveTo district 
 						Denizen* newd = new Zombie(current->getName());
 						cout << " " << newd->getName() << " is a zombie on the move to " << moveTo->getName() << endl;
 						newd->setTurnOver(true);
-						if (verbose == true){
-							newd->speak(); //if the user wants the verbose description, have the new denizen speak
-						}
+						// if (verbose == true){
+						// 	newd->speak(); //if the user wants the verbose description, have the new denizen speak
+						// }
 						moveTo->addDenizen(current);
 					}
 					mov = pop->erase(mov); //erase them from the current district
